@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quiz Level 1A</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root{
+  --bg-blue:#061247;
+  --front-purple:#561386;
+  --it-red:#8C0327;
+}
+
+body{
+  background:var(--bg-blue);
+  font-family:system-ui;
+  margin:0;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* CARD */
+.card{
+  width:90vw;
+  max-width:380px;
+  height:55vw;
+  max-height:240px;
+  background:white;
+  border:4px solid var(--it-red);
+  border-radius:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:1rem;
+  text-align:center;
+}
+
+.question-text{
+  font-weight:800;
+  text-transform:uppercase;
+  font-size:1.05rem;
+  color:var(--front-purple);
+  line-height:1.2;
+}
+
+/* HEADER */
+.answers-header{
+  width:90vw;
+  max-width:380px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  margin-top:8px;
+  margin-bottom:4px;
+}
+
+#counter{
+  color:white;
+  font-weight:800;
+  font-size:0.95rem;
+}
+
+#score{
+  color:#FFD700;
+  font-weight:800;
+  font-size:0.95rem;
+  text-align:right;
+}
+
+.next-btn{
+  background:#00cfd5;
+  color:#061247;
+  font-weight:800;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 12px;
+  font-size:0.8rem;
+}
+
+/* SOUND BUTTON */
+.sound-btn{
+  background:white;
+  color:#061247;
+  font-weight:800;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 12px;
+  font-size:0.8rem;
+}
+
+/* ANSWERS GRID */
+.answers{
+  width:90vw;
+  max-width:380px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-top:10px;
+  justify-items:center;
+}
+
+/* BUTTONS */
+.answer-btn{
+  width:100%;
+  max-width:170px;
+  aspect-ratio:1 / 1;
+  background:white;
+  color:#0E065C;
+  font-weight:700;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:6px;
+  font-size:1.2rem;
+  line-height:1.2;
+}
+
+.correct{
+  background:#22c55e;
+  color:white;
+  box-shadow:0 0 10px #22c55e;
+  transform:scale(1.05);
+}
+
+.wrong{
+  background:#ef4444;
+  color:white;
+}
+
+/* RETRY BUTTON */
+.retry-btn{
+  all:unset;
+  background:var(--front-purple);
+  color:white;
+  font-weight:800;
+  border-radius:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 18px;
+  font-size:0.9rem;
+  cursor:pointer;
+  margin-top:12px;
+}
+
+.retry-btn:active{
+  transform:scale(0.96);
+}
+</style>
+</head>
+
+<body>
+
+<div class="w-full max-w-[380px] flex justify-between items-center mb-2">
+  <h2 class="text-white font-extrabold tracking-widest">
+    LEVEL 1A QUIZ
+  </h2>
+
+  <button id="soundToggle" class="sound-btn">
+    🔊 ON
+  </button>
+</div>
+
+<div class="card">
+  <div id="question" class="question-text"></div>
+</div>
+
+<div class="answers-header">
+  <div id="counter"></div>
+  <button id="nextBtn" class="next-btn">NEXT</button>
+  <div id="score"></div>
+</div>
+
+<div id="answers" class="answers"></div>
+
+<div id="retryContainer" class="w-full max-w-[380px] flex justify-center"></div>
+
+<!-- AUDIO -->
+<audio id="correctSound" src="audio/correct.mp3"></audio>
+<audio id="wrongSound" src="audio/wrong.mp3"></audio>
+<audio id="passSound" src="audio/pass.mp3"></audio>
+<audio id="failSound" src="audio/fail.mp3"></audio>
+
+<script>
+
+/* SOUND SYSTEM */
+let soundEnabled = true;
+
+function playSound(sound){
+  if(!soundEnabled) return;
+
+  document.querySelectorAll("audio").forEach(a=>{
+    a.pause();
+    a.currentTime = 0;
+  });
+
+  sound.play();
+}
+
+/* SOUND TOGGLE */
+const soundToggle = document.getElementById("soundToggle");
+
+soundToggle.onclick = () => {
+  soundEnabled = !soundEnabled;
+  soundToggle.innerText = soundEnabled ? "🔊 ON" : "🔇 OFF";
+};
+
+/* QUESTIONS */
+const questions = [
+{
+  question: "1) Choose the correct sentence",
+  options: [
+    "The sun is in a sky",
+    "Sun is in a sky",
+    "The sun is in the sky",
+    "A sun is in a sky"
+  ],
+  answer: 2
+},
+
+{
+  question: "2) What _________ John doing?",
+  options: ["are","do","does","is"],
+  answer: 3
+},
+
+{
+  question: "3) John and Mary _________ the radio.",
+  options: [
+    "are listening on",
+    "are listening to",
+    "is listening on",
+    "is listening to"
+  ],
+  answer: 1
+},
+
+{
+  question: "4) Bill and I _____________ here.",
+  options: ["we're","we","we are","are"],
+  answer: 3
+},
+
+{
+  question: "5) Sarah, what _________ doing?",
+  options: ["she is","are you","are","is"],
+  answer: 1
+},
+
+{
+  question: "6) Mary's _________ the garden.",
+  options: ["in","at","on","into"],
+  answer: 0
+},
+
+{
+  question: "7) Are there six books on the table?",
+  options: [
+    "No, are five",
+    "No, there are three",
+    "No, there's the one",
+    "No, there are any"
+  ],
+  answer: 1
+},
+
+{
+  question: "8) Tom often sings, but ______",
+  options: [
+    "sings Sarah?",
+    "Sarah sings?",
+    "Sarah does?",
+    "does Sarah?"
+  ],
+  answer: 3
+},
+
+{
+  question: "9) Peter is looking at ________",
+  options: ["she","he","her","here"],
+  answer: 2
+},
+
+{
+  question: "10) Who's that boy?",
+  options: [
+    "Is Bill",
+    "It's Tom",
+    "It's a boy",
+    "Peter's that"
+  ],
+  answer: 1
+},
+
+{
+  question: "11) She _________ coffee every morning",
+  options: ["drink","drinks","drinking","drank"],
+  answer: 1
+},
+
+{
+  question: "12) They _________ football at the moment",
+  options: ["play","are playing","plays","played"],
+  answer: 1
+},
+
+{
+  question: "13) I _________ to the gym every day",
+  options: ["go","goes","going","gone"],
+  answer: 0
+},
+
+{
+  question: "14) We _________ watching TV now",
+  options: ["is","are","am","be"],
+  answer: 1
+},
+
+{
+  question: "15) He _________ his homework yesterday",
+  options: ["do","does","did","done"],
+  answer: 2
+},
+
+{
+  question: "16) I _________ never seen that before",
+  options: ["have","has","had","having"],
+  answer: 0
+},
+
+{
+  question: "17) She _________ already finished",
+  options: ["have","has","had","having"],
+  answer: 1
+},
+
+{
+  question: "18) We _________ just arrived",
+  options: ["have","has","had","having"],
+  answer: 0
+},
+
+{
+  question: "19) They _________ gone home",
+  options: ["have","has","had","having"],
+  answer: 0
+},
+
+{
+  question: "20) He _________ working all day",
+  options: ["has been","have been","is","was"],
+  answer: 0
+},
+
+{
+  question: "21) I _________ studying for two hours",
+  options: ["have been","has been","am","was"],
+  answer: 0
+},
+
+{
+  question: "22) She _________ living here since 2020",
+  options: ["has been","have been","is","was"],
+  answer: 0
+},
+
+{
+  question: "23) We _________ dinner when he arrived",
+  options: ["have","had","were having","are having"],
+  answer: 2
+},
+
+{
+  question: "24) I _________ TV when you called",
+  options: ["watched","was watching","watch","am watching"],
+  answer: 1
+},
+
+{
+  question: "25) They _________ already eaten",
+  options: ["have","has","had","having"],
+  answer: 0
+},
+
+{
+  question: "26) He _________ to London last year",
+  options: ["go","goes","went","gone"],
+  answer: 2
+},
+
+{
+  question: "27) I _________ him yesterday",
+  options: ["see","saw","seen","seeing"],
+  answer: 1
+},
+
+{
+  question: "28) She _________ a new car",
+  options: ["buy","buys","bought","buying"],
+  answer: 2
+},
+
+{
+  question: "29) We _________ a great time",
+  options: ["have","had","has","having"],
+  answer: 1
+},
+
+{
+  question: "30) They _________ very happy",
+  options: ["is","are","was","be"],
+  answer: 1
+},
+
+{
+  question: "31) I _________ going out tonight",
+  options: ["am","is","are","be"],
+  answer: 0
+},
+
+{
+  question: "32) She _________ not understand",
+  options: ["do","does","did","doing"],
+  answer: 1
+},
+
+{
+  question: "33) They _________ already left",
+  options: ["have","has","had","having"],
+  answer: 0
+},
+
+{
+  question: "34) He _________ working now",
+  options: ["is","are","am","be"],
+  answer: 0
+},
+
+{
+  question: "35) We _________ to the cinema yesterday",
+  options: ["go","went","gone","going"],
+  answer: 1
+},
+
+{
+  question: "36) I _________ never tried that",
+  options: ["have","has","had","having"],
+  answer: 0
+},
+
+{
+  question: "37) She _________ cooking dinner",
+  options: ["is","are","am","be"],
+  answer: 0
+},
+
+{
+  question: "38) They _________ playing football",
+  options: ["is","are","am","be"],
+  answer: 1
+},
+
+{
+  question: "39) He _________ just arrived",
+  options: ["have","has","had","having"],
+  answer: 1
+},
+
+{
+  question: "40) I _________ reading a book",
+  options: ["is","are","am","be"],
+  answer: 2
+},
+
+{
+  question: "41) She _________ a shower at the moment",
+  options: ["has","is having","have","having"],
+  answer: 1
+},
+
+{
+  question: "42) I _________ him for years",
+  options: ["know","have known","knew","knowing"],
+  answer: 1
+},
+
+{
+  question: "43) They _________ lunch when I arrived",
+  options: ["had","were having","have","having"],
+  answer: 1
+},
+
+{
+  question: "44) He _________ in London since 2010",
+  options: ["lives","has lived","lived","living"],
+  answer: 1
+},
+
+{
+  question: "45) We _________ just finished",
+  options: ["have","has","had","having"],
+  answer: 0
+},
+
+{
+  question: "46) I _________ to Italy last year",
+  options: ["go","went","gone","going"],
+  answer: 1
+},
+
+{
+  question: "47) She _________ already eaten",
+  options: ["have","has","had","having"],
+  answer: 1
+},
+
+{
+  question: "48) They _________ working all day",
+  options: ["have been","has been","is","was"],
+  answer: 0
+},
+
+{
+  question: "49) He _________ TV when I called",
+  options: ["watched","was watching","watch","am watching"],
+  answer: 1
+},
+
+{
+  question: "50) I _________ my keys",
+  options: ["lose","lost","have lost","losing"],
+  answer: 2
+},
+
+{
+  question: "51) She _________ to work every day",
+  options: ["go","goes","going","gone"],
+  answer: 1
+},
+
+{
+  question: "52) They _________ football now",
+  options: ["play","are playing","plays","played"],
+  answer: 1
+},
+
+{
+  question: "53) I _________ tired",
+  options: ["am","is","are","be"],
+  answer: 0
+},
+
+{
+  question: "54) He _________ a car",
+  options: ["have","has","had","having"],
+  answer: 1
+},
+
+{
+  question: "55) We _________ ready",
+  options: ["am","is","are","be"],
+  answer: 2
+},
+
+{
+  question: "56) She _________ English very well",
+  options: ["speak","speaks","speaking","spoken"],
+  answer: 1
+},
+
+{
+  question: "57) They _________ in London",
+  options: ["live","lives","living","lived"],
+  answer: 0
+},
+
+{
+  question: "58) I _________ a coffee",
+  options: ["want","wants","wanting","wanted"],
+  answer: 0
+},
+
+{
+  question: "59) He _________ very fast",
+  options: ["run","runs","running","ran"],
+  answer: 1
+},
+
+{
+  question: "60) We _________ TV every day",
+  options: ["watch","watches","watching","watched"],
+  answer: 0
+},
+
+{
+  question: "61) She _________ a book now",
+  options: ["read","reads","is reading","reading"],
+  answer: 2
+},
+
+{
+  question: "62) I _________ him yesterday",
+  options: ["see","saw","seen","seeing"],
+  answer: 1
+},
+
+{
+  question: "63) They _________ already arrived",
+  options: ["have","has","had","having"],
+  answer: 0
+},
+
+{
+  question: "64) He _________ his homework",
+  options: ["do","does","did","done"],
+  answer: 1
+},
+
+{
+  question: "65) We _________ dinner now",
+  options: ["have","are having","had","having"],
+  answer: 1
+},
+
+{
+  question: "66) I _________ to Paris last year",
+  options: ["go","went","gone","going"],
+  answer: 1
+},
+
+{
+  question: "67) She _________ just left",
+  options: ["have","has","had","having"],
+  answer: 1
+},
+
+{
+  question: "68) They _________ playing football now",
+  options: ["is","are","am","be"],
+  answer: 1
+},
+
+{
+  question: "69) He _________ TV at the moment",
+  options: ["watch","watches","is watching","watching"],
+  answer: 2
+},
+
+{
+  question: "70) I _________ my homework",
+  options: ["finish","finished","have finished","finishing"],
+  answer: 2
+},
+
+{
+  question: "71) She _________ coffee every day",
+  options: ["drink","drinks","drinking","drank"],
+  answer: 1
+},
+
+{
+  question: "72) They _________ in London",
+  options: ["live","lives","living","lived"],
+  answer: 0
+},
+
+{
+  question: "73) I _________ very tired",
+  options: ["am","is","are","be"],
+  answer: 0
+},
+
+{
+  question: "74) He _________ a new car",
+  options: ["have","has","had","having"],
+  answer: 1
+},
+
+{
+  question: "75) We _________ ready now",
+  options: ["am","is","are","be"],
+  answer: 2
+},
+
+{
+  question: "76) She _________ English",
+  options: ["speak","speaks","speaking","spoken"],
+  answer: 1
+},
+
+{
+  question: "77) They _________ football every day",
+  options: ["play","plays","playing","played"],
+  answer: 0
+},
+
+{
+  question: "78) I _________ a coffee now",
+  options: ["want","wants","wanting","wanted"],
+  answer: 0
+},
+
+{
+  question: "79) He _________ very fast",
+  options: ["run","runs","running","ran"],
+  answer: 1
+},
+
+{
+  question: "80) We _________ TV now",
+  options: ["watch","watches","are watching","watched"],
+  answer: 2
+},
+
+{
+  question: "81) She _________ a shower now",
+  options: ["has","is having","have","having"],
+  answer: 1
+},
+
+{
+  question: "82) I _________ him for years",
+  options: ["know","have known","knew","knowing"],
+  answer: 1
+},
+
+{
+  question: "83) They _________ lunch when I arrived",
+  options: ["had","were having","have","having"],
+  answer: 1
+},
+
+{
+  question: "84) He _________ in London since 2010",
+  options: ["lives","has lived","lived","living"],
+  answer: 1
+},
+
+{
+  question: "85) We _________ just finished",
+  options: ["have","has","had","having"],
+  answer: 0
+},
+
+{
+  question: "86) I _________ to Italy last year",
+  options: ["go","went","gone","going"],
+  answer: 1
+},
+
+{
+  question: "87) She _________ already eaten",
+  options: ["have","has","had","having"],
+  answer: 1
+},
+
+{
+  question: "88) They _________ working all day",
+  options: ["have been","has been","is","was"],
+  answer: 0
+},
+
+{
+  question: "89) He _________ TV when I called",
+  options: ["watched","was watching","watch","am watching"],
+  answer: 1
+},
+
+{
+  question: "90) I _________ my keys",
+  options: ["lose","lost","have lost","losing"],
+  answer: 2
+},
+
+{
+  question: "91) She _________ to work every day",
+  options: ["go","goes","going","gone"],
+  answer: 1
+},
+
+{
+  question: "92) They _________ football now",
+  options: ["play","are playing","plays","played"],
+  answer: 1
+},
+
+{
+  question: "93) I _________ tired",
+  options: ["am","is","are","be"],
+  answer: 0
+},
+
+{
+  question: "94) He _________ a car",
+  options: ["have","has","had","having"],
+  answer: 1
+},
+
+{
+  question: "95) We _________ ready",
+  options: ["am","is","are","be"],
+  answer: 2
+},
+
+{
+  question: "96) She _________ English very well",
+  options: ["speak","speaks","speaking","spoken"],
+  answer: 1
+},
+
+{
+  question: "97) They _________ in London",
+  options: ["live","lives","living","lived"],
+  answer: 0
+},
+
+{
+  question: "98) I _________ a coffee",
+  options: ["want","wants","wanting","wanted"],
+  answer: 0
+},
+
+{
+  question: "99) He _________ very fast",
+  options: ["run","runs","running","ran"],
+  answer: 1
+},
+
+{
+  question: "100) We _________ TV every day",
+  options: ["watch","watches","watching","watched"],
+  answer: 0
+}
+
+];
+
+
+
+let quiz = [];
+let index = 0;
+let score = 0;
+
+/* SHUFFLE (FISHER-YATES) */
+function shuffle(arr){
+  let newArr = [...arr];
+
+  for(let i = newArr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+
+  return newArr;
+}
+
+/* START QUIZ */
+function startQuiz(){
+  quiz = shuffle([...questions]).slice(0,15);
+  index = 0;
+  score = 0;
+
+  // SHOW ANSWERS + NEXT AGAIN
+  document.getElementById("answers").style.display = "grid";
+  document.getElementById("nextBtn").style.display = "flex";
+
+  // CLEAR RETRY BUTTON
+  document.getElementById("retryContainer").innerHTML = "";
+
+  showQuestion();
+}
+
+/* SHOW QUESTION */
+function showQuestion(){
+  const q = quiz[index];
+
+  const cleanQuestion = q.question
+    .replace(/^\d+\)\s*/, "")
+    .replace(/\./g, "");
+
+  document.getElementById("question").innerText = cleanQuestion;
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  q.options.forEach((opt,i)=>{
+    const btn = document.createElement("button");
+    btn.innerText = opt;
+    btn.className = "answer-btn";
+
+    btn.onclick = ()=>checkAnswer(i, q.answer);
+
+    answersDiv.appendChild(btn);
+  });
+
+  document.getElementById("nextBtn").disabled = true;
+
+  updateScore();
+}
+
+/* CHECK ANSWER */
+function checkAnswer(selected, correct){
+  const buttons = document.querySelectorAll(".answer-btn");
+
+  const correctSound = document.getElementById("correctSound");
+  const wrongSound = document.getElementById("wrongSound");
+
+  buttons.forEach((b,i)=>{
+    if(i === correct) b.classList.add("correct");
+    if(i === selected && selected !== correct) b.classList.add("wrong");
+    b.disabled = true;
+  });
+
+  if(selected === correct){
+    score++;
+    playSound(correctSound);
+  } else {
+    playSound(wrongSound);
+  }
+
+  document.getElementById("nextBtn").disabled = false;
+}
+
+/* UPDATE SCORE */
+function updateScore(){
+  document.getElementById("score").innerText =
+    `${score} / ${quiz.length}`;
+
+  document.getElementById("counter").innerText =
+    `${index + 1} / ${quiz.length}`;
+}
+
+/* END QUIZ */
+function endQuiz(){
+  const percent = (score / quiz.length) * 100;
+
+  const passSound = document.getElementById("passSound");
+  const failSound = document.getElementById("failSound");
+
+  if(percent >= 70){
+    document.getElementById("question").innerText =
+      "WELL DONE! YOU'VE PASSED! 🎉";
+    playSound(passSound);
+  } else {
+    document.getElementById("question").innerText =
+      "BAD LUCK! TRY AGAIN ❌";
+    playSound(failSound);
+  }
+
+  // HIDE ANSWERS + NEXT
+  document.getElementById("answers").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+
+  // SHOW RETRY BUTTON
+  document.getElementById("retryContainer").innerHTML =
+    `<button class="retry-btn">TRY AGAIN</button>`;
+
+  document.querySelector(".retry-btn").onclick = startQuiz;
+}
+
+/* NEXT BUTTON */
+document.getElementById("nextBtn").onclick = function(){
+  if(index === quiz.length - 1){
+    endQuiz();
+    return;
+  }
+  index++;
+  showQuestion();
+};
+
+/* INIT */
+startQuiz();
+
+</script>
+
+</body>
+</html>
