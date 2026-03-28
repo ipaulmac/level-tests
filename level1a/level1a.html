@@ -26,22 +26,22 @@ body{
 .card{
   width:90vw;
   max-width:380px;
-  height:55vw;
-  max-height:240px;
+  height:40vw;
+  max-height:180px;
   background:white;
   border:4px solid var(--it-red);
   border-radius:1rem;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:1rem;
+  padding:0.8rem;
   text-align:center;
 }
 
 .question-text{
   font-weight:800;
   text-transform:uppercase;
-  font-size:clamp(1.1rem, 3.5vw, 1.3rem);
+  font-size:clamp(0.95rem, 2.8vw, 1.1rem);
   color:var(--front-purple);
   line-height:1.3;
 }
@@ -101,29 +101,30 @@ body{
 .answers{
   width:90vw;
   max-width:380px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-  margin-top:10px;
-  justify-items:center;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:12px;
 }
 
 /* BUTTONS */
 .answer-btn{
   width:100%;
-  max-width:170px;
-  aspect-ratio:1 / 1;
+  min-height:60px;
   background:white;
-  color:#0E065C;
+  color: var(--front-purple);
   font-weight:700;
   border-radius:10px;
   display:flex;
   align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:6px;
-  font-size:1.2rem;
-  line-height:1.2;
+  justify-content:flex-start;
+  text-align:left;
+  padding:10px 12px;
+  font-size:0.95rem;
+  line-height:1.3;
+
+  white-space: normal;
+  word-break: break-word;
 }
 
 .correct{
@@ -219,638 +220,514 @@ soundToggle.onclick = () => {
 /* QUESTIONS */
 const questions = [
 {
-  question: "1) Choose the correct sentence",
-  options: [
-    "The sun is in a sky",
-    "Sun is in a sky",
-    "The sun is in the sky",
-    "A sun is in a sky"
-  ],
+  question: "Choose the correct sentence",
+  options: ["The sun is in a sky","Sun is in a sky","The sun is in the sky","A sun is in a sky"],
   answer: 2
 },
-
 {
-  question: "2) What _________ John doing?",
+  question: "What _________ John doing?",
   options: ["are","do","does","is"],
   answer: 3
 },
-
 {
-  question: "3) John and Mary _________ the radio.",
-  options: [
-    "are listening on",
-    "are listening to",
-    "is listening on",
-    "is listening to"
-  ],
+  question: "John and Mary _________ the radio",
+  options: ["are listening on","are listening to","is listening on","is listening to"],
   answer: 1
 },
-
 {
-  question: "4) Bill and I _____________ here.",
+  question: "Bill and I _____________ here",
   options: ["we're","we","we are","are"],
   answer: 3
 },
-
 {
-  question: "5) Sarah, what _________ doing?",
+  question: "Sarah, what _________ doing?",
   options: ["she is","are you","are","is"],
   answer: 1
 },
-
 {
-  question: "6) Mary's _________ the garden.",
+  question: "Mary's _________ the garden",
   options: ["in","at","on","into"],
   answer: 0
 },
-
 {
-  question: "7) Are there six books on the table?",
-  options: [
-    "No, are five",
-    "No, there are three",
-    "No, there's the one",
-    "No, there are any"
-  ],
+  question: "Are there six books on the table?",
+  options: ["No, are five","No, there are three","No, there's the one","No, there are any"],
   answer: 1
 },
-
 {
-  question: "8) Tom often sings, but ______",
-  options: [
-    "sings Sarah?",
-    "Sarah sings?",
-    "Sarah does?",
-    "does Sarah?"
-  ],
+  question: "Tom often sings, but _________",
+  options: ["sings Sarah?","Sarah sings?","Sarah does?","does Sarah?"],
   answer: 3
 },
-
 {
-  question: "9) Peter is looking at ________",
+  question: "Peter is looking at _________",
   options: ["she","he","her","here"],
   answer: 2
 },
-
 {
-  question: "10) Who's that boy?",
-  options: [
-    "Is Bill",
-    "It's Tom",
-    "It's a boy",
-    "Peter's that"
-  ],
+  question: "Who's that boy?",
+  options: ["Is Bill","It's Tom","It's a boy","Peter's that"],
   answer: 1
 },
 
 {
-  question: "11) She _________ coffee every morning",
-  options: ["drink","drinks","drinking","drank"],
-  answer: 1
+  question: "Where's the book?",
+  options: ["There's it","He's under the chair","There's on the chair","It's here"],
+  answer: 3
 },
-
 {
-  question: "12) They _________ football at the moment",
-  options: ["play","are playing","plays","played"],
-  answer: 1
-},
-
-{
-  question: "13) I _________ to the gym every day",
-  options: ["go","goes","going","gone"],
-  answer: 0
-},
-
-{
-  question: "14) We _________ watching TV now",
-  options: ["is","are","am","be"],
-  answer: 1
-},
-
-{
-  question: "15) He _________ his homework yesterday",
-  options: ["do","does","did","done"],
+  question: "Are you happy?",
+  options: ["Yes, I'm","No, I aren't","Yes, I am","No, I not"],
   answer: 2
 },
-
 {
-  question: "16) I _________ never seen that before",
-  options: ["have","has","had","having"],
-  answer: 0
+  question: "What's his name?",
+  options: ["It's name Jack","It's a Jack","It's Jack's name","It's Jack"],
+  answer: 3
 },
-
 {
-  question: "17) She _________ already finished",
-  options: ["have","has","had","having"],
+  question: "Do you dance or sing?",
+  options: ["I'm dance but I'm not sing","I dance but I don't sing","I'm dancing but not singing","I dance but I'm not singing"],
   answer: 1
 },
-
 {
-  question: "18) We _________ just arrived",
-  options: ["have","has","had","having"],
-  answer: 0
+  question: "Is that a book?",
+  options: ["Yes, there is","Yes, it is","Yes, is a book","Yes, it's"],
+  answer: 1
 },
-
 {
-  question: "19) They _________ gone home",
-  options: ["have","has","had","having"],
-  answer: 0
-},
-
-{
-  question: "20) He _________ working all day",
-  options: ["has been","have been","is","was"],
-  answer: 0
-},
-
-{
-  question: "21) I _________ studying for two hours",
-  options: ["have been","has been","am","was"],
-  answer: 0
-},
-
-{
-  question: "22) She _________ living here since 2020",
-  options: ["has been","have been","is","was"],
-  answer: 0
-},
-
-{
-  question: "23) We _________ dinner when he arrived",
-  options: ["have","had","were having","are having"],
+  question: "Is your house big?",
+  options: ["No, it's a small","No, that's small house","No, it isn't","No, it's small house"],
   answer: 2
 },
-
 {
-  question: "24) I _________ TV when you called",
-  options: ["watched","was watching","watch","am watching"],
+  question: "What's her brother doing?",
+  options: ["Playing football","Is playing football","She's playing football","He playing football"],
   answer: 1
 },
-
 {
-  question: "25) They _________ already eaten",
-  options: ["have","has","had","having"],
-  answer: 0
-},
-
-{
-  question: "26) He _________ to London last year",
-  options: ["go","goes","went","gone"],
+  question: "How many chairs are there in the room?",
+  options: ["Are four","Are five chairs","There's one","There's a chair"],
   answer: 2
 },
-
 {
-  question: "27) I _________ him yesterday",
-  options: ["see","saw","seen","seeing"],
-  answer: 1
-},
-
-{
-  question: "28) She _________ a new car",
-  options: ["buy","buys","bought","buying"],
+  question: "Choose the correct sentence:",
+  options: ["Is that table big brown?","Is that big brown table?","Is that big table brown?","Is brown that big table?"],
   answer: 2
 },
-
 {
-  question: "29) We _________ a great time",
-  options: ["have","had","has","having"],
-  answer: 1
-},
-
-{
-  question: "30) They _________ very happy",
-  options: ["is","are","was","be"],
-  answer: 1
-},
-
-{
-  question: "31) I _________ going out tonight",
-  options: ["am","is","are","be"],
+  question: "Choose the correct sentence:",
+  options: ["Mary can come tomorrow","Mary cans come tomorrow","Mary she can come tomorrow","Mary can tomorrow come"],
   answer: 0
 },
 
 {
-  question: "32) She _________ not understand",
-  options: ["do","does","did","doing"],
-  answer: 1
-},
-
-{
-  question: "33) They _________ already left",
-  options: ["have","has","had","having"],
-  answer: 0
-},
-
-{
-  question: "34) He _________ working now",
-  options: ["is","are","am","be"],
-  answer: 0
-},
-
-{
-  question: "35) We _________ to the cinema yesterday",
-  options: ["go","went","gone","going"],
-  answer: 1
-},
-
-{
-  question: "36) I _________ never tried that",
-  options: ["have","has","had","having"],
-  answer: 0
-},
-
-{
-  question: "37) She _________ cooking dinner",
-  options: ["is","are","am","be"],
-  answer: 0
-},
-
-{
-  question: "38) They _________ playing football",
-  options: ["is","are","am","be"],
-  answer: 1
-},
-
-{
-  question: "39) He _________ just arrived",
-  options: ["have","has","had","having"],
-  answer: 1
-},
-
-{
-  question: "40) I _________ reading a book",
-  options: ["is","are","am","be"],
+  question: "The divan is _________ the television",
+  options: ["at","near of","next to","between"],
   answer: 2
 },
-
 {
-  question: "41) She _________ a shower at the moment",
-  options: ["has","is having","have","having"],
-  answer: 1
-},
-
-{
-  question: "42) I _________ him for years",
-  options: ["know","have known","knew","knowing"],
-  answer: 1
-},
-
-{
-  question: "43) They _________ lunch when I arrived",
-  options: ["had","were having","have","having"],
-  answer: 1
-},
-
-{
-  question: "44) He _________ in London since 2010",
-  options: ["lives","has lived","lived","living"],
-  answer: 1
-},
-
-{
-  question: "45) We _________ just finished",
-  options: ["have","has","had","having"],
-  answer: 0
-},
-
-{
-  question: "46) I _________ to Italy last year",
-  options: ["go","went","gone","going"],
-  answer: 1
-},
-
-{
-  question: "47) She _________ already eaten",
-  options: ["have","has","had","having"],
-  answer: 1
-},
-
-{
-  question: "48) They _________ working all day",
-  options: ["have been","has been","is","was"],
-  answer: 0
-},
-
-{
-  question: "49) He _________ TV when I called",
-  options: ["watched","was watching","watch","am watching"],
-  answer: 1
-},
-
-{
-  question: "50) I _________ my keys",
-  options: ["lose","lost","have lost","losing"],
+  question: "The plant is _________ the door",
+  options: ["between","in front","beside","next"],
   answer: 2
 },
-
 {
-  question: "51) She _________ to work every day",
-  options: ["go","goes","going","gone"],
-  answer: 1
-},
-
-{
-  question: "52) They _________ football now",
-  options: ["play","are playing","plays","played"],
-  answer: 1
-},
-
-{
-  question: "53) I _________ tired",
-  options: ["am","is","are","be"],
+  question: "What's that girl?",
+  options: ["She's a student","It's a student","He's student","She's a student girl"],
   answer: 0
 },
-
 {
-  question: "54) He _________ a car",
-  options: ["have","has","had","having"],
-  answer: 1
+  question: "Do the girls know Tom?",
+  options: ["Yes, they know her","No, they aren't","Yes, they know","No, they don't"],
+  answer: 3
 },
-
 {
-  question: "55) We _________ ready",
-  options: ["am","is","are","be"],
+  question: "Choose the correct sentence:",
+  options: ["John's looking at I and you","John and I am looking at you","I'm looking at you and John","You looking at John and me"],
   answer: 2
 },
-
 {
-  question: "56) She _________ English very well",
-  options: ["speak","speaks","speaking","spoken"],
-  answer: 1
-},
-
-{
-  question: "57) They _________ in London",
-  options: ["live","lives","living","lived"],
-  answer: 0
-},
-
-{
-  question: "58) I _________ a coffee",
-  options: ["want","wants","wanting","wanted"],
-  answer: 0
-},
-
-{
-  question: "59) He _________ very fast",
-  options: ["run","runs","running","ran"],
-  answer: 1
-},
-
-{
-  question: "60) We _________ TV every day",
-  options: ["watch","watches","watching","watched"],
-  answer: 0
-},
-
-{
-  question: "61) She _________ a book now",
-  options: ["read","reads","is reading","reading"],
+  question: "Choose the correct sentence:",
+  options: ["That girl is some of my friends","That girl is me friend","This girl is one of my friends","This girl is a friends"],
   answer: 2
 },
-
 {
-  question: "62) I _________ him yesterday",
-  options: ["see","saw","seen","seeing"],
+  question: "Choose the correct sentence:",
+  options: ["This is Mr Smith here","That is Mr Smith there","This is the Mr Smith there","This is the Mr Smith there"],
   answer: 1
 },
-
 {
-  question: "63) They _________ already arrived",
-  options: ["have","has","had","having"],
+  question: "My brother is writing _________",
+  options: ["by a pencil","with pen","in a paper","in a book"],
+  answer: 3
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Who now in London lives?","Who in London now lives?","Who does lives in London?","Who lives in London now?"],
+  answer: 3
+},
+{
+  question: "Monday is the first day",
+  options: ["Tuesday is the second","The second is tuesday","The fourth is thursday","Tuesday is the fourth"],
   answer: 0
 },
 
 {
-  question: "64) He _________ his homework",
-  options: ["do","does","did","done"],
+  question: "Jane is in front of Tom Tom is _________ Jane",
+  options: ["beside","behind","before","between"],
   answer: 1
 },
-
 {
-  question: "65) We _________ dinner now",
-  options: ["have","are having","had","having"],
+  question: "Tom is Mr Smith's son",
+  options: ["She is her son","She is her son","He is her son","He is his son"],
+  answer: 3
+},
+{
+  question: "Choose the correct sentence",
+  options: ["Come here to us!","Go there to us!","Go here to them!","Come there to him!"],
+  answer: 0
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Don't looking at us!","No looking at we!","No look at us!","Don't look at us!"],
+  answer: 3
+},
+{
+  question: "Choose the correct sentence",
+  options: ["Some girl are listening to the old man","An old man is listening to the girl","The old man are listening to the girl","An old men are listening to the girl"],
   answer: 1
 },
-
 {
-  question: "66) I _________ to Paris last year",
-  options: ["go","went","gone","going"],
-  answer: 1
-},
-
-{
-  question: "67) She _________ just left",
-  options: ["have","has","had","having"],
-  answer: 1
-},
-
-{
-  question: "68) They _________ playing football now",
-  options: ["is","are","am","be"],
-  answer: 1
-},
-
-{
-  question: "69) He _________ TV at the moment",
-  options: ["watch","watches","is watching","watching"],
+  question: "Choose the correct sentence:",
+  options: ["Listen to he and he's brother!","Listen to he and his brother!","Listen to him and his brother!","Listen to him and he's brother!"],
   answer: 2
 },
-
 {
-  question: "70) I _________ my homework",
-  options: ["finish","finished","have finished","finishing"],
+  question: "Whose are those shoes?",
+  options: ["He's","Mr Blacks'","Mrs Black's","She's"],
   answer: 2
 },
-
 {
-  question: "71) She _________ coffee every day",
-  options: ["drink","drinks","drinking","drank"],
+  question: "Choose the correct sentence:",
+  options: ["Where will you put them?","Where you are putting them?","Where will he puts them?","Where he is putting them?"],
+  answer: 0
+},
+{
+  question: "Jane's tall and _________",
+  options: ["John's too","Tom is, too","Tom is to","Tom isn't, too"],
+  answer: 1
+},
+{
+  question: "Does Brian play football?",
+  options: ["Yes, and Sam doesn't, too","Yes, but Sam doesn't","No, but Sam doesn't","No, and Sam does, too"],
   answer: 1
 },
 
 {
-  question: "72) They _________ in London",
-  options: ["live","lives","living","lived"],
+  question: "Jane is talking to _________",
+  options: ["them","they","she","your"],
   answer: 0
 },
-
 {
-  question: "73) I _________ very tired",
-  options: ["am","is","are","be"],
-  answer: 0
-},
-
-{
-  question: "74) He _________ a new car",
-  options: ["have","has","had","having"],
+  question: "These pens are _________",
+  options: ["Pete","Pete's","of Pete","of Pete's"],
   answer: 1
 },
-
 {
-  question: "75) We _________ ready now",
-  options: ["am","is","are","be"],
+  question: "Sarah _________ dogs at home",
+  options: ["haves a","haves some","has some","has a"],
   answer: 2
 },
-
 {
-  question: "76) She _________ English",
-  options: ["speak","speaks","speaking","spoken"],
+  question: "This is _________",
+  options: ["second lesson","lesson two","the lesson two","lesson the second"],
   answer: 1
 },
-
 {
-  question: "77) They _________ football every day",
-  options: ["play","plays","playing","played"],
-  answer: 0
-},
-
-{
-  question: "78) I _________ a coffee now",
-  options: ["want","wants","wanting","wanted"],
-  answer: 0
-},
-
-{
-  question: "79) He _________ very fast",
-  options: ["run","runs","running","ran"],
-  answer: 1
-},
-
-{
-  question: "80) We _________ TV now",
-  options: ["watch","watches","are watching","watched"],
+  question: "Choose the correct sentence:",
+  options: ["Sue cans have Mike's radio","Sue can has Mike's radio","Sue can have Mike's radio","Sue can have Mike's radio"],
   answer: 2
 },
-
 {
-  question: "81) She _________ a shower now",
-  options: ["has","is having","have","having"],
-  answer: 1
-},
-
-{
-  question: "82) I _________ him for years",
-  options: ["know","have known","knew","knowing"],
-  answer: 1
-},
-
-{
-  question: "83) They _________ lunch when I arrived",
-  options: ["had","were having","have","having"],
-  answer: 1
-},
-
-{
-  question: "84) He _________ in London since 2010",
-  options: ["lives","has lived","lived","living"],
-  answer: 1
-},
-
-{
-  question: "85) We _________ just finished",
-  options: ["have","has","had","having"],
+  question: "It's 21.00",
+  options: ["Yes, it's nine in the evening","Yes, it's nine clock","Yes, they are nine o'clock","Yes, they are nine in the evening"],
   answer: 0
 },
-
 {
-  question: "86) I _________ to Italy last year",
-  options: ["go","went","gone","going"],
-  answer: 1
-},
-
-{
-  question: "87) She _________ already eaten",
-  options: ["have","has","had","having"],
-  answer: 1
-},
-
-{
-  question: "88) They _________ working all day",
-  options: ["have been","has been","is","was"],
-  answer: 0
-},
-
-{
-  question: "89) He _________ TV when I called",
-  options: ["watched","was watching","watch","am watching"],
-  answer: 1
-},
-
-{
-  question: "90) I _________ my keys",
-  options: ["lose","lost","have lost","losing"],
+  question: "164 is _________",
+  options: ["hundred sixty-four","a hundred sixty-four","a hundred and sixty-four","a hundred sixty and four"],
   answer: 2
 },
-
 {
-  question: "91) She _________ to work every day",
-  options: ["go","goes","going","gone"],
-  answer: 1
+  question: "Choose the correct sentence:",
+  options: ["The girls don't do the homework","The girls don't the homework","The girls doesn't do the homework","The girls don't do the homework"],
+  answer: 0
 },
-
 {
-  question: "92) They _________ football now",
-  options: ["play","are playing","plays","played"],
-  answer: 1
+  question: "Do Mr and Mrs Smith speak French?",
+  options: ["He does but she doesn't","He speaks but she not","He doesn't speaks but she does","He do but she don't"],
+  answer: 0
 },
-
 {
-  question: "93) I _________ tired",
-  options: ["am","is","are","be"],
+  question: "Who are they? One is my brother and _________",
+  options: ["the big boy is Peter","the big boy is a Peter","a big boy is Peter","a big boy is a Peter"],
   answer: 0
 },
 
 {
-  question: "94) He _________ a car",
-  options: ["have","has","had","having"],
+  question: "Choose the correct sentence:",
+  options: ["Some moon is in a sky","Moon is in a sky","The Moon is in sky","The Moon is in the sky"],
+  answer: 3
+},
+{
+  question: "Where _________ Mary standing?",
+  options: ["do","is","are","does"],
   answer: 1
 },
-
 {
-  question: "95) We _________ ready",
-  options: ["am","is","are","be"],
+  question: "Peter and Sue _________ the table",
+  options: ["are sitting in","are sitting on","is sitting near","is sitting behind"],
+  answer: 1
+},
+{
+  question: "Sarah and I _________ here",
+  options: ["is","we are","we're","are"],
+  answer: 3
+},
+{
+  question: "John, what _________ doing?",
+  options: ["are you","is he","he is","you are"],
+  answer: 0
+},
+{
+  question: "Anne's _________ the bathroom",
+  options: ["at","on","in","into"],
   answer: 2
 },
-
 {
-  question: "96) She _________ English very well",
-  options: ["speak","speaks","speaking","spoken"],
+  question: "Are there many shops near your house?",
+  options: ["There's three","No","There's two","There'many"],
   answer: 1
 },
-
 {
-  question: "97) They _________ in London",
-  options: ["live","lives","living","lived"],
-  answer: 0
+  question: "Mary speaks German but, _________?",
+  options: ["speaks Bill","Bill speaks","does Bill","do Bill"],
+  answer: 2
 },
-
 {
-  question: "98) I _________ a coffee",
-  options: ["want","wants","wanting","wanted"],
-  answer: 0
-},
-
-{
-  question: "99) He _________ very fast",
-  options: ["run","runs","running","ran"],
+  question: "Barbara is looking at _________",
+  options: ["there","them","we","our"],
   answer: 1
 },
+{
+  question: "Where's the cat?",
+  options: ["It's on table","It's under table","There, on the table","There under table"],
+  answer: 2
+},
+{
+  question: "Is Mary pretty?",
+  options: ["Yes, she is","Yes, she's","No, isn't","No she isn't"],
+  answer: 0
+},
+{
+  question: "What's her name?",
+  options: ["The name Anne","Anne is the her name","It's Anne's name","It's Anne"],
+  answer: 3
+},
+{
+  question: "Does he speak German and French?",
+  options: ["Yes, French but no German","No, doesn't French but yes German","Yes, he speaks French and German","No, he don't speak French and but he speaks German"],
+  answer: 2
+},
+{
+  question: "Is that a newspaper?",
+  options: ["Yes, there is","Yes, it's that newspaper","Yes, it's","Yes, it is"],
+  answer: 3
+},
+{
+  question: "Is their house small?",
+  options: ["No, that's a big house","No, it's big","Yes, there house is big","Yes, a big house that"],
+  answer: 1
+},
+{
+  question: "What's your brother doing?",
+  options: ["Reading","He reading","Is reading","He reads"],
+  answer: 0
+},
+{
+  question: "How many trees can you see?",
+  options: ["There's a tree","There are any","There are trees","Three"],
+  answer: 3
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Is this little red book?","Is this red little book?","Is this a little book red?","Is this red book little?"],
+  answer: 1
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Fred cans work tomorrow","Fred can't be able to work tomorrow","Fred isn't being able to work tomorrow","Fred is able to work tomorrow"],
+  answer: 3
+},
+{
+  question: "The keys are _________ the radio",
+  options: ["at","between","near","next"],
+  answer: 2
+},
+{
+  question: "The window is _________ the door",
+  options: ["next","between","at","above"],
+  answer: 3
+},
+{
+  question: "What's that man?",
+  options: ["He's my brother","Yes, it's a man","He's a teacher","It's a teacher"],
+  answer: 2
+},
+{
+  question: "Do they live in England?",
+  options: ["Yes, they do","Yes, they live","No, they don't live","Yes, they live in it"],
+  answer: 0
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Mary is sitting near you and me","You and me is sitting near Mary","You and Mary's sitting near me","Mary and you sitting near me"],
+  answer: 0
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["These boys are good friends","This boy's a good friend","My friends a good boy","My friends good boys"],
+  answer: 0
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["This is my shoes here","Those are my shoes there","That is my shoes there","These are my shoes there"],
+  answer: 3
+},
+{
+  question: "Simon is writing _________",
+  options: ["by a pen","with pen","in the paper","on the page"],
+  answer: 3
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Does Pete working now?","Is Peter work now?","Is Peter working now?","Does Peter works now?"],
+  answer: 2
+},
+{
+  question: "Wednesday is the third day",
+  options: ["Tuesday is the fourth","The fourth is thursday","Thursday is the fourth","The second is Thursday"],
+  answer: 2
+},
+{
+  question: "Ken is next to Mary",
+  options: ["Mary is beside Ken","Mary is in front of Ken","Mary is behind Ken","Mary is near to Ken"],
+  answer: 0
+},
 
 {
-  question: "100) We _________ TV every day",
-  options: ["watch","watches","watching","watched"],
+  question: "Kate is Mr Smith's daughter",
+  options: ["She is of her father","She is her father","He is their father","He is her father"],
+  answer: 3
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Come here to my!","Come here to me!","Come there to us!","Come here at me!"],
+  answer: 1
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Don't touch my book!","Not touch my book!","You don't touch my book!","Not touching my book!"],
   answer: 0
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["An old women lives near me","Old women lives near my","An old women live near me","An old woman lives near me"],
+  answer: 3
+},
+{
+  question: "Listen to _________ sister!",
+  options: ["she and she's","her and hers","she and her","her and her"],
+  answer: 2
+},
+{
+  question: "Whose dogs are they?",
+  options: ["Miss Smith's","Miss's Smith","Miss Smith","Of Miss Smith"],
+  answer: 0
+},
+{
+  question: "Where _________ the bottles?",
+  options: ["he is taking","does he taking","is he taking","do he taking"],
+  answer: 2
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Tom's clever and they are, too","Tom's clever but they are, too","Tom's clever and they aren't, too"],
+  answer: 0
+},
+{
+  question: "Can he sing?",
+  options: ["Yes, and Peter can't, too","No, and Peter can't, too","No, and can't Peter","Yes, and Peter can, too"],
+  answer: 3
+},
+{
+  question: "Tony is speaking to _________",
+  options: ["my","she","him","our"],
+  answer: 2
+},
+{
+  question: "This book is _________ Chris",
+  options: ["of","at","for","to"],
+  answer: 2
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Mark's some pen","Mark has some pens","Mark has any pens","Mark hasn't some pens"],
+  answer: 1
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["This is the lesson three","This is three lesson","This is the third lesson","This is the number three lesson"],
+  answer: 2
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Pat can have Mike's book","Pat can't to have Mike's book","Pat can to have Mike's book","Pat can have Mike' book"],
+  answer: 0
+},
+{
+  question: "It's 11.45",
+  options: ["Yes, it's fifteen to twelve","Yes, it's a quarter to twelve","Yes, it's twelve minus fifteen","Yes, it's twelve less a quarter"],
+  answer: 1
+},
+{
+  question: "140 is _________",
+  options: ["one hundred forty","one hundred fourteen","one hundred and fourteen","one hundred and forty"],
+  answer: 3
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Tom don't play football","Tom doesn't play football","Tom plays the football","Tom doesn't play the football"],
+  answer: 1
+},
+{
+  question: "Does your father read newspapers?",
+  options: ["Yes, he reads","No, he reads not","No, he don't","Yes, he does"],
+  answer: 3
+},
+{
+  question: "That's Sue She _________",
+  options: ["haves long hair","has long hairs","has hair long","has long hair"],
+  answer: 3
+},
+{
+  question: "Choose the correct sentence:",
+  options: ["Where come she from?","Where she comes from?","Where does she coming from?","Where does she come from?"],
+  answer: 3
 }
 
 ];
 
-
-
-let quiz = [];
-let lastQuiz = []; // 🔥 remembers previous test
-let index = 0;
-let score = 0;
 
 /* SHUFFLE (FISHER-YATES) */
 function shuffle(arr){
@@ -864,25 +741,14 @@ function shuffle(arr){
   return newArr;
 }
 
+let quiz = [];
+let index = 0;
+let score = 0;
+
 /* START QUIZ */
 function startQuiz(){
 
-  let pool = [...questions];
-
-  // 🔥 remove previous quiz questions
-  if(lastQuiz.length > 0){
-    pool = pool.filter(q => !lastQuiz.includes(q));
-  }
-
-  // 🔁 reset if not enough questions left
-  if(pool.length < 15){
-    pool = [...questions];
-  }
-
-  quiz = shuffle(pool).slice(0,15);
-
-  // 🔥 save current quiz for next round
-  lastQuiz = [...quiz];
+  quiz = shuffle([...questions]).slice(0,15);
 
   index = 0;
   score = 0;
@@ -912,7 +778,10 @@ function showQuestion(){
 
   q.options.forEach((opt,i)=>{
     const btn = document.createElement("button");
-    btn.innerText = opt;
+
+    const letters = ["a)","b)","c)","d)"];
+    btn.innerText = `${letters[i]} ${opt}`;
+
     btn.className = "answer-btn";
 
     btn.onclick = ()=>checkAnswer(i, q.answer);
@@ -997,7 +866,6 @@ document.getElementById("nextBtn").onclick = function(){
 
 /* INIT */
 startQuiz();
-
 </script>
 
 </body>
