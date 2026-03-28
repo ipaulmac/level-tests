@@ -115,7 +115,8 @@ body{
   color:var(--front-purple);
   font-weight:700;
   border-radius:10px;
-  border:1px solid #e5e7eb;
+  border:1px solid #cbd5e1;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 
   display:flex;
   align-items:center;
@@ -382,9 +383,15 @@ const questions = [
 },
 {
   question: "Tom is Mr Smith's son",
-  options: ["She is her son","She is her son","He is her son","He is his son"],
+  options: [
+    "She is her son",
+    "She is his son",
+    "He is her son",
+    "He is his son"
+  ],
   answer: 3
 },
+
 {
   question: "Choose the correct sentence",
   options: ["Come here to us!","Go there to us!","Go here to them!","Come there to him!"],
@@ -448,7 +455,12 @@ const questions = [
 },
 {
   question: "Choose the correct sentence:",
-  options: ["Sue cans have Mike's radio","Sue can has Mike's radio","Sue can have Mike's radio","Sue can have Mike's radio"],
+  options: [
+    "Sue cans have Mike's radio",
+    "Sue can has Mike's radio",
+    "Sue can have Mike's radio",
+    "Sue have Mike's radio"
+  ],
   answer: 2
 },
 {
@@ -461,11 +473,18 @@ const questions = [
   options: ["hundred sixty-four","a hundred sixty-four","a hundred and sixty-four","a hundred sixty and four"],
   answer: 2
 },
+
 {
   question: "Choose the correct sentence:",
-  options: ["The girls don't do the homework","The girls don't the homework","The girls doesn't do the homework","The girls don't do the homework"],
+  options: [
+    "The girls don't do the homework",
+    "The girls don't the homework",
+    "The girls doesn't do the homework",
+    "The girls do not the homework"
+  ],
   answer: 0
 },
+
 {
   question: "Do Mr and Mrs Smith speak French?",
   options: ["He does but she doesn't","He speaks but she not","He doesn't speaks but she does","He do but she don't"],
@@ -786,7 +805,7 @@ function showQuestion(){
     const btn = document.createElement("button");
 
     const letters = ["a)","b)","c)","d)"];
-    btn.innerText = `${letters[i]} ${opt}`;
+    btn.innerHTML = `<span style="color: var(--it-red); font-weight:800; display:inline-block; width:28px;">${letters[i]}</span>${opt}`;
 
     btn.className = "answer-btn";
 
