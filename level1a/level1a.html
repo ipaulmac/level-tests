@@ -665,9 +665,15 @@ const questions = [
 },
 {
   question: "Choose the correct sentence:",
-  options: ["Tom's clever and they are, too","Tom's clever but they are, too","Tom's clever and they aren't, too"],
+  options: [
+    "Tom's clever and they are, too",
+    "Tom's clever but they are, too",
+    "Tom's clever and they aren't, too",
+    "Tom's clever but they not"
+  ],
   answer: 0
 },
+
 {
   question: "Can he sing?",
   options: ["Yes, and Peter can't, too","No, and Peter can't, too","No, and can't Peter","Yes, and Peter can, too"],
@@ -756,11 +762,8 @@ function startQuiz(){
   index = 0;
   score = 0;
 
-  // SHOW ANSWERS + NEXT AGAIN
-  document.getElementById("answers").style.display = "grid";
+  document.getElementById("answers").style.display = "flex";
   document.getElementById("nextBtn").style.display = "flex";
-
-  // CLEAR RETRY BUTTON
   document.getElementById("retryContainer").innerHTML = "";
 
   showQuestion();
@@ -772,7 +775,7 @@ function showQuestion(){
 
   const cleanQuestion = q.question
     .replace(/^\d+\)\s*/, "")
-    .replace(/\./g, "");
+    .replace(/\.$/, "");
 
   document.getElementById("question").innerText = cleanQuestion;
 
@@ -846,11 +849,9 @@ function endQuiz(){
     playSound(failSound);
   }
 
-  // HIDE ANSWERS + NEXT
   document.getElementById("answers").style.display = "none";
   document.getElementById("nextBtn").style.display = "none";
 
-  // SHOW RETRY BUTTON
   document.getElementById("retryContainer").innerHTML =
     `<button class="retry-btn">TRY AGAIN</button>`;
 
@@ -869,6 +870,7 @@ document.getElementById("nextBtn").onclick = function(){
 
 /* INIT */
 startQuiz();
+
 </script>
 
 </body>
