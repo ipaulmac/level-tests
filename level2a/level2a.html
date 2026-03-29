@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quiz Level 2A</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root{
+  --bg-blue:#061247;
+  --front-purple:#561386;
+  --it-red:#8C0327;
+}
+
+body{
+  background:var(--bg-blue);
+  font-family:system-ui;
+  margin:0;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* CARD */
+.card{
+  width:90vw;
+  max-width:380px;
+  height:40vw;
+  max-height:180px;
+  background:white;
+  border:4px solid var(--it-red);
+  border-radius:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0.8rem;
+  text-align:center;
+}
+
+.question-text{
+  font-weight:800;
+  text-transform:uppercase;
+  font-size:clamp(0.95rem, 2.8vw, 1.1rem);
+  color:var(--front-purple);
+  line-height:1.3;
+}
+
+/* HEADER */
+.answers-header{
+  width:90vw;
+  max-width:380px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  margin-top:8px;
+  margin-bottom:4px;
+}
+
+#counter{
+  color:white;
+  font-weight:800;
+  font-size:0.95rem;
+}
+
+#score{
+  color:#FFD700;
+  font-weight:800;
+  font-size:0.95rem;
+  text-align:right;
+}
+
+.next-btn{
+  background:#00cfd5;
+  color:#061247;
+  font-weight:800;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 12px;
+  font-size:0.8rem;
+}
+
+/* SOUND BUTTON */
+.sound-btn{
+  background:white;
+  color:#061247;
+  font-weight:800;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 12px;
+  font-size:0.8rem;
+}
+
+/* ANSWERS GRID */
+.answers{
+  width:90vw;
+  max-width:380px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:12px;
+}
+
+/* BUTTONS */
+.answer-btn{
+  width:100%;
+  min-height:50px;
+  background:#eef2f7;
+  color:var(--front-purple);
+  font-weight:700;
+  border-radius:10px;
+  border:1px solid #cbd5e1;
+
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:left;
+
+  padding:10px 12px;
+  font-size:0.95rem;
+  line-height:1.3;
+
+  white-space: normal;
+  word-break: break-word;
+
+  transition: transform 0.08s ease, background 0.12s ease;
+}
+
+.answer-btn:active{
+  transform: scale(0.94);
+  background:#dbe3ec;
+}
+
+.next-btn{
+  transition: transform 0.1s ease;
+}
+
+.next-btn:active{
+  transform: scale(0.95);
+}
+
+.correct{
+  background:#22c55e;
+  color:white;
+  box-shadow:0 0 10px #22c55e;
+  transform:scale(1.05);
+}
+
+.wrong{
+  background:#ef4444;
+  color:white;
+}
+
+/* RETRY BUTTON */
+.retry-btn{
+  all:unset;
+  background:var(--front-purple);
+  color:white;
+  font-weight:800;
+  border-radius:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 18px;
+  font-size:0.9rem;
+  cursor:pointer;
+  margin-top:12px;
+}
+
+.retry-btn:active{
+  transform:scale(0.96);
+}
+</style>
+</head>
+
+<body>
+
+<div class="w-full max-w-[380px] flex justify-between items-center mb-2">
+  <h2 class="text-white font-extrabold tracking-widest">
+    LEVEL 2A QUIZ
+  </h2>
+
+  <button id="soundToggle" class="sound-btn">
+    🔊 ON
+  </button>
+</div>
+
+<div class="card">
+  <div id="question" class="question-text"></div>
+</div>
+
+<div class="answers-header">
+  <div id="counter"></div>
+  <button id="nextBtn" class="next-btn">NEXT</button>
+  <div id="score"></div>
+</div>
+
+<div id="answers" class="answers"></div>
+
+<div id="retryContainer" class="w-full max-w-[380px] flex justify-center"></div>
+
+<!-- AUDIO -->
+<audio id="correctSound" src="audio/correct.mp3"></audio>
+<audio id="wrongSound" src="audio/wrong.mp3"></audio>
+<audio id="passSound" src="audio/pass.mp3"></audio>
+<audio id="failSound" src="audio/fail.mp3"></audio>
+
+<script>
+
+/* SOUND SYSTEM */
+let soundEnabled = true;
+
+function playSound(sound){
+  if(!soundEnabled) return;
+
+  document.querySelectorAll("audio").forEach(a=>{
+    a.pause();
+    a.currentTime = 0;
+  });
+
+  sound.play();
+}
+
+/* SOUND TOGGLE */
+const soundToggle = document.getElementById("soundToggle");
+
+soundToggle.onclick = () => {
+  soundEnabled = !soundEnabled;
+  soundToggle.innerText = soundEnabled ? "🔊 ON" : "🔇 OFF";
+};
+
+/* QUESTIONS */
+const questions = [
+{
+question: "There are _____________________ in the classroom but only one teacher",
+options: ["many people","much pupils","a lot of people","a lot of pupils"],
+answer: 3
+},
+{
+question: "572 is __________",
+options: ["five hundred seventy two","five hundreds seventy two","five hundred and seventy two","five hundreds and seventy two"],
+answer: 2
+},
+{
+question: "Kate is the girl _________________ curly hair",
+options: ["of many","with many","of a lot of","with a lot of"],
+answer: 3
+},
+{
+question: "His mother will come at 8 o' clock _____________ evening",
+options: ["of this","on this","this","in this"],
+answer: 2
+},
+{
+question: "Sally is _________________Paul",
+options: ["as tall than","as tall as","so tall as","so tall that"],
+answer: 1
+},
+{
+question: "Choose the correct sentence:",
+options: ["How is your age?","What age have you got?","How old are you?","How many years do you have?"],
+answer: 2
+},
+{
+question: "Peter _____________",
+options: ["gave the pen to Peter","gave to Peter then pen","give the Pen to Peter","give to Peter the pen"],
+answer: 0
+},
+{
+question: "The sun _________________ in the East",
+options: ["is always rising","always is rising","always rises","rises always"],
+answer: 2
+},
+{
+question: "Which girls _______________?",
+options: ["John likes","likes John","does John like","do John like"],
+answer: 2
+},
+{
+question: "There isn't _________________at the bus-stop",
+options: ["anybody","people","any persons","somebody"],
+answer: 0
+},
+{
+question: "Kim and Fred_________home",
+options: ["are at","are in","are to","they are at"],
+answer: 0
+},
+{
+question: "What colour are your new shoes?",
+options: ["They are of colour brown","They are brown colour","Their brown","They're brown"],
+answer: 3
+},
+{
+question: "Choose the correct sentence:",
+options: ["Are the big apples nice?","Are nice the big apples?","Are the big nice apples?","Are big and nice the apples?"],
+answer: 0
+},
+{
+question: "He hasn't bought ____________ oranges",
+options: ["a lot","much","any","some"],
+answer: 2
+},
+{
+question: "Choose the correct sentence:",
+options: ["Go there to they!","Go here to us!","Go there to them!","Go there to us"],
+answer: 2
+},
+{
+question: "How ________________from Rome to Florence?",
+options: ["it is going","to go","we can go","can we go"],
+answer: 3
+},
+{
+question: "_____________Mary reads in bed",
+options: ["Always","Sometimes","Never","Seldom"],
+answer: 1
+},
+{
+question: "________________don't like red wine",
+options: ["Any people","Some people","Somebody","Anybody"],
+answer: 1
+},
+{
+question: "Sue ______________at the flowers in the garden",
+options: ["is seeing","is looking","is washing","watching"],
+answer: 1
+},
+{
+question: "Did you visit France last year?",
+options: ["No, I went never there","No, I never was there","No, I've never been there","No, I never have been there"],
+answer: 2
+},
+{
+question: "Tom didn't call the police. Sue didn't call _____________",
+options: ["them, either","them, too","him, either","him, too"],
+answer: 0
+},
+{
+question: "Do you like that shop? Yes, I ____________ every week",
+options: ["come there","come here","go there","go here"],
+answer: 2
+},
+{
+question: "Brian is the man ________________",
+options: ["of a hat","of no hat","with hat","without a hat"],
+answer: 3
+},
+{
+question: "Sarah's _______________ as the boys",
+options: ["too strong","so strong","as strong","also strong"],
+answer: 2
+},
+{
+question: "Are my keys in your jacket pocket? No, there _____________ in my pocket",
+options: ["isn't anything","aren't anything","isn't nothing","isn't something"],
+answer: 0
+},
+{
+question: "Have you got any apples? Yes, I've got _____________",
+options: ["a small","one small","two small ones","two small"],
+answer: 2
+},
+{
+question: "Whose are those dogs? They're _______________",
+options: ["of them","to them","their","theirs"],
+answer: 3
+},
+{
+question: "Who __________________ on Saturdays?",
+options: ["do help you","helps you","you help","you do help"],
+answer: 1
+},
+{
+question: "What time _______________ breakfast?",
+options: ["does Jane have the","Jane has","does Jane have","has Jane the"],
+answer: 2
+},
+{
+question: "I don't feel tired because I went to bed very early ______________",
+options: ["last night","yesterday in the night","this night","tonight"],
+answer: 0
+},
+{
+question: "What is Simon like? He _______________",
+options: ["is very well","likes football","is very tall","is like a tall people"],
+answer: 2
+},
+{
+question: "Have the people got the money now? Yes, the police gave _________",
+options: ["it to us","it to it","it to them","them to it"],
+answer: 2
+},
+{
+question: "Terry is behind Tom and Sue",
+options: ["Yes, he's between them","Yes, he's near them","Yes, they're next to him","Yes, they're in front of him"],
+answer: 3
+},
+{
+question: "Jane is _______________ the radio",
+options: ["listening","listening to","listening at","listens to"],
+answer: 1
+},
+{
+question: "Are those books in the car? Yes, Robert _____________yesterday",
+options: ["put them","put them into","puts them into","put them there"],
+answer: 3
+},
+{
+question: "_________________to Scotland last month?",
+options: ["Did Andrew go","Was Andrew","Has Andrew been","Has Andrew gone"],
+answer: 0
+},
+{
+question: "This is a photo of me when I _______________",
+options: ["had short hairs","have short hair","have short hairs","had short hair"],
+answer: 3
+},
+{
+question: "Whose is that? It's _______",
+options: ["ours","my sisters","of my sister's","my"],
+answer: 0
+},
+{
+question: "James _______________ to play tomorrow",
+options: ["is going","can","shall","will"],
+answer: 0
+},
+{
+question: "How is your brother?",
+options: ["He's very tall","He's very well","He's twenty years old","He's very good"],
+answer: 1
+},
+{
+question: "My brother was ______________ all week",
+options: ["at the home","at home","at his home","to home"],
+answer: 1
+},
+{
+question: "Pete never eats potatoes and ___________",
+options: ["so doesn't Sue","neither does Sue","neither doesn't Sue","neither Sue does"],
+answer: 1
+},
+{
+question: "Is there _____________ the bottle?",
+options: ["much water into","many water into","much water in","a lot water in"],
+answer: 2
+},
+{
+question: "The party will start __________________ Saturday",
+options: ["on 8 o'clock","at 8.00","at the 8 o'clock","on the 8 o'clock"],
+answer: 1
+},
+{
+question: "Are you going to the shops? No, ____________",
+options: ["I go there by bike","I've gone already","to the work","I've already been"],
+answer: 3
+},
+{
+question: "Here are three girls: _____________?",
+options: ["Which girl is the bigger","What is the biggest girl","Which girl is the biggest","What girl is the biggest"],
+answer: 2
+},
+{
+question: "Jack is writing ______________",
+options: ["with pen","by a pen","on the wall","in book"],
+answer: 2
+},
+{
+question: "What _________________ on Saturdays?",
+options: ["Ken usually does","does Ken usually","usually does Ken","does Ken usually do"],
+answer: 3
+},
+{
+question: "Have you been to America?",
+options: ["Ever","Already","Never","Yet"],
+answer: 2
+},
+{
+question: "Sue ______________ make a birthday cake tomorrow",
+options: ["she will","she'll","is going to","can be able to"],
+answer: 2
+},
+{
+question: "Fred ______________ to the shops",
+options: ["went just","has just went","just has gone","has just gone"],
+answer: 3
+},
+{
+question: "Anne gave _______________",
+options: ["my the flowers","the flowers me","me the flowers","gave to me the flowers"],
+answer: 2
+},
+{
+question: "Mary __________ to work",
+options: ["never walks","walks never","is never walking","always is walking"],
+answer: 0
+},
+{
+question: "Where ______________ ?",
+options: ["does Pete work","works Pete","do Pete work","does Pete works"],
+answer: 0
+},
+{
+question: "Who ___________ ?",
+options: ["Tom usually helps","Tom helps","does help Tom","helps Tom"],
+answer: 3
+},
+{
+question: "What colour is your car?",
+options: ["Its grey","It's a grey","Grey","It's colour is grey"],
+answer: 2
+},
+{
+question: "Choose the correct sentence:",
+options: ["Is the little boy clever?","Is clever the little boy?","Is little the clever boy?","Is the little boy a clever?"],
+answer: 0
+},
+{
+question: "Mary hasn't got _________________",
+options: ["some friends","any friend","no friends","any friends"],
+answer: 3
+},
+{
+question: "Choose the correct sentence:",
+options: ["Not do that!","Don't that!","Not to do that!","Don't do that!"],
+answer: 3
+},
+{
+question: "Choose the correct sentence:",
+options: ["Come here to me!","Go there to us!","Go here to us","Come there to me!"],
+answer: 0
+},
+{
+question: "Brian is _____________ Pamela",
+options: ["as old as","not old as","as old than","so old that"],
+answer: 0
+},
+{
+question: "The woman ______________ her dogs through the window",
+options: ["is seeing","is washing","is watching","is looking"],
+answer: 2
+},
+{
+question: "________________ going to the party",
+options: ["Everyone are","Every people are","Every people is","No one is"],
+answer: 3
+},
+{
+question: "How ____________________ to the station from here?",
+options: ["to go","do you go","do one goes","we go"],
+answer: 1
+},
+{
+question: "Did your friend go to Spain last summer?",
+options: ["No, he never did went","No, he never has gone","No, he was never there","No, he's never been there"],
+answer: 3
+},
+{
+question: "He doesn't have a dog. I haven't _____________",
+options: ["got either","got one, too","got one, either","got, too"],
+answer: 2
+},
+{
+question: "215 is _________",
+options: ["two hundred fifteen","two hundreds and fifteen","two hundred and fifty","two hundred and fifteen"],
+answer: 3
+},
+{
+question: "Have you been to America? Yes, I ________________ in 1998",
+options: ["went there","came there","came here","went here"],
+answer: 0
+},
+{
+question: "Sue is the girl ________________ in her hand",
+options: ["with anything","without nothing","without something","with nothing"],
+answer: 3
+},
+{
+question: "Anne's older _______________",
+options: ["that Mary","than Mary's","than us","than I"],
+answer: 2
+},
+{
+question: "Are my socks in the drawer? No, there ______________ in the drawer",
+options: ["is nothing","isn't nothing","isn't something","is anything"],
+answer: 0
+},
+{
+question: "Have you got any black jeans? No, but I've got ______________",
+options: ["some blue ones","a blue one","some blues","some blue"],
+answer: 0
+},
+{
+question: "Whose is this house? It's ________________",
+options: ["our","of us","his","her"],
+answer: 2
+},
+{
+question: "Choose the correct sentence:",
+options: ["How old will be he?","How much old will he be?","How old will he be?","How many years will he have?"],
+answer: 2
+},
+{
+question: "There isn't ______________________ in the restaurant",
+options: ["any people","any persons","anyone","nobody"],
+answer: 2
+},
+{
+question: "Laura's _________________ her sister",
+options: ["very taller than","much taller than","a lot of taller than","taller that"],
+answer: 1
+},
+{
+question: "David's a man _______________ big hands",
+options: ["with some","with his","with the","with"],
+answer: 3
+},
+{
+question: "What time ________________ dinner?",
+options: ["Peter have","Peter has","has Peter the","does Peter have"],
+answer: 3
+},
+{
+question: "Her father will come at 7 o clock ____________",
+options: ["in this evening","this afternoon","in the afternoon","this evening"],
+answer: 3
+},
+{
+question: "I feel great today because I ________________",
+options: ["went to bed early last night","went to the bed early last night","have gone to bed early yesterday evening","have gone to bed early tonight"],
+answer: 0
+},
+{
+question: "What is Tom like? He __________________",
+options: ["likes a cup of coffee","isn't very nice","is very well","is liking football"],
+answer: 1
+},
+{
+question: "Has she got the money? Yes, I gave _________________yesterday",
+options: ["them to her","it to him","it to her","her it"],
+answer: 2
+},
+{
+question: "He is beside me. I'm ______________ him",
+options: ["behind","in front of","next to","near from"],
+answer: 2
+},
+{
+question: "She was _____________________ music",
+options: ["hearing by","listening to","listening","listening at"],
+answer: 1
+},
+{
+question: "The shoes are in the box. I know, because my brother __________________ yesterday",
+options: ["has put them in","put them in","has put them","put them into"],
+answer: 1
+},
+{
+question: "Last month, _____________ to Scotland",
+options: ["was Ian","Ian was","went Ian","Ian went"],
+answer: 3
+},
+{
+question: "Which student was standing near the teacher? Mike was ______________",
+options: ["much near","very nearer","the nearest","the next"],
+answer: 2
+},
+{
+question: "Whose is this? It's ____________",
+options: ["my","his","her","our"],
+answer: 1
+},
+{
+question: "Tomorrow, my wife will come _________________late",
+options: ["home","at home","to home","to the home"],
+answer: 0
+},
+{
+question: "Sue works in a shop and _______________",
+options: ["so does Alan","Alan too does","but Alan does, too","but Alan too does"],
+answer: 0
+},
+{
+question: "Jane ______________ to sing in the concert on Saturday",
+options: ["can","will","is going","shall"],
+answer: 2
+},
+{
+question: "What is your cousin?",
+options: ["That's him","I haven't got any","She's a doctor","He's twenty-five"],
+answer: 3
+},
+{
+question: "Can you see ________________ the bottles?",
+options: ["many water into","much water in","much water into","a lot water in"],
+answer: 1
+},
+{
+question: "We'll do it ______________",
+options: ["11 o'clock in the morning","on 11 o'clock in the morning","in this morning at 11 o'clock","this morning at 11 o'clock"],
+answer: 3
+},
+{
+question: "Are you going to work? No, ______________",
+options: ["I'm taking a bus","to the doctor's","by train","I'm going there by bike"],
+answer: 1
+},
+{
+question: "Here are three books. ______________like best?",
+options: ["Which book do you","What book do you","Which book you","What book you"],
+answer: 0
+},
+{
+question: "The old man came _____________ the stairs",
+options: ["out of","off","down","through"],
+answer: 2
+},
+{
+question: "What _____________ on Saturday?",
+options: ["does Jim usually","Jim usually does","does Jim usually do","usually does Jim"],
+answer: 2
+},
+{
+question: "Have you ever been to Scotland?",
+options: ["Not ever","Not already","Not yet","Not never"],
+answer: 2
+},
+{
+question: "Jane _______________ work tomorrow",
+options: ["going to","can","can to","is able"],
+answer: 1
+}
+
+];
+
+
+/* SHUFFLE (FISHER-YATES) */
+function shuffle(arr){
+  let newArr = [...arr];
+
+  for(let i = newArr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+
+  return newArr;
+}
+
+let quiz = [];
+let index = 0;
+let score = 0;
+
+/* START QUIZ */
+function startQuiz(){
+
+  quiz = shuffle([...questions]).slice(0,15);
+
+  index = 0;
+  score = 0;
+
+  document.getElementById("answers").style.display = "flex";
+  document.getElementById("nextBtn").style.display = "flex";
+  document.getElementById("retryContainer").innerHTML = "";
+
+  showQuestion();
+}
+
+/* SHOW QUESTION */
+function showQuestion(){
+  const q = quiz[index];
+
+  const cleanQuestion = q.question
+    .replace(/^\d+\)\s*/, "")
+    .replace(/\.$/, "");
+
+  document.getElementById("question").innerText = cleanQuestion;
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  q.options.forEach((opt,i)=>{
+    const btn = document.createElement("button");
+
+    const letters = ["a)","b)","c)","d)"];
+    btn.innerHTML = `<span style="color: var(--it-red); font-weight:800; display:inline-block; width:28px;">${letters[i]}</span>${opt}`;
+
+    btn.className = "answer-btn";
+
+    btn.onclick = ()=>checkAnswer(i, q.answer);
+
+    answersDiv.appendChild(btn);
+  });
+
+  document.getElementById("nextBtn").disabled = true;
+
+  updateScore();
+}
+
+/* CHECK ANSWER */
+function checkAnswer(selected, correct){
+  const buttons = document.querySelectorAll(".answer-btn");
+
+  const correctSound = document.getElementById("correctSound");
+  const wrongSound = document.getElementById("wrongSound");
+
+  buttons.forEach((b,i)=>{
+    if(i === correct) b.classList.add("correct");
+    if(i === selected && selected !== correct) b.classList.add("wrong");
+    b.disabled = true;
+  });
+
+  if(selected === correct){
+    score++;
+    playSound(correctSound);
+  } else {
+    playSound(wrongSound);
+  }
+
+  document.getElementById("nextBtn").disabled = false;
+}
+
+/* UPDATE SCORE */
+function updateScore(){
+  document.getElementById("score").innerText =
+    `${score} / ${quiz.length}`;
+
+  document.getElementById("counter").innerText =
+    `${index + 1} / ${quiz.length}`;
+}
+
+/* END QUIZ */
+function endQuiz(){
+  const percent = (score / quiz.length) * 100;
+
+  const passSound = document.getElementById("passSound");
+  const failSound = document.getElementById("failSound");
+
+  if(percent >= 70){
+    document.getElementById("question").innerText =
+      "WELL DONE! YOU'VE PASSED! 🎉";
+    playSound(passSound);
+  } else {
+    document.getElementById("question").innerText =
+      "BAD LUCK! TRY AGAIN ❌";
+    playSound(failSound);
+  }
+
+  document.getElementById("answers").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+
+  document.getElementById("retryContainer").innerHTML =
+    `<button class="retry-btn">TRY AGAIN</button>`;
+
+  document.querySelector(".retry-btn").onclick = startQuiz;
+}
+
+/* NEXT BUTTON */
+document.getElementById("nextBtn").onclick = function(){
+  if(index === quiz.length - 1){
+    endQuiz();
+    return;
+  }
+  index++;
+  showQuestion();
+};
+
+/* INIT */
+startQuiz();
+
+</script>
+
+</body>
+</html>
