@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quiz Level 6B</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root{
+  --bg-blue:#061247;
+  --front-purple:#561386;
+  --it-red:#8C0327;
+}
+
+body{
+  background:var(--bg-blue);
+  font-family:system-ui;
+  margin:0;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* CARD */
+.card{
+  width:90vw;
+  max-width:380px;
+  height:40vw;
+  max-height:180px;
+  background:white;
+  border:4px solid var(--it-red);
+  border-radius:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0.8rem;
+  text-align:center;
+}
+
+.question-text{
+  font-weight:800;
+  text-transform:uppercase;
+  font-size:clamp(0.95rem, 2.8vw, 1.1rem);
+  color:var(--front-purple);
+  line-height:1.3;
+}
+
+/* HEADER */
+.answers-header{
+  width:90vw;
+  max-width:380px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  margin-top:8px;
+  margin-bottom:4px;
+}
+
+#counter{
+  color:white;
+  font-weight:800;
+  font-size:0.95rem;
+}
+
+#score{
+  color:#FFD700;
+  font-weight:800;
+  font-size:0.95rem;
+  text-align:right;
+}
+
+.next-btn{
+  background:#00cfd5;
+  color:#061247;
+  font-weight:800;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 12px;
+  font-size:0.8rem;
+}
+
+/* SOUND BUTTON */
+.sound-btn{
+  background:white;
+  color:#061247;
+  font-weight:800;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 12px;
+  font-size:0.8rem;
+}
+
+/* ANSWERS GRID */
+.answers{
+  width:90vw;
+  max-width:380px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:12px;
+}
+
+/* BUTTONS */
+.answer-btn{
+  width:100%;
+  min-height:50px;
+  background:#eef2f7;
+  color:var(--front-purple);
+  font-weight:700;
+  border-radius:10px;
+  border:1px solid #cbd5e1;
+
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:left;
+
+  padding:10px 12px;
+  font-size:0.95rem;
+  line-height:1.3;
+
+  white-space: normal;
+  word-break: break-word;
+
+  transition: transform 0.08s ease, background 0.12s ease;
+}
+
+.answer-btn:active{
+  transform: scale(0.94);
+  background:#dbe3ec;
+}
+
+.next-btn{
+  transition: transform 0.1s ease;
+}
+
+.next-btn:active{
+  transform: scale(0.95);
+}
+
+.correct{
+  background:#22c55e;
+  color:white;
+  box-shadow:0 0 10px #22c55e;
+  transform:scale(1.05);
+}
+
+.wrong{
+  background:#ef4444;
+  color:white;
+}
+
+/* RETRY BUTTON */
+.retry-btn{
+  all:unset;
+  background:var(--front-purple);
+  color:white;
+  font-weight:800;
+  border-radius:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 18px;
+  font-size:0.9rem;
+  cursor:pointer;
+  margin-top:12px;
+}
+
+.retry-btn:active{
+  transform:scale(0.96);
+}
+</style>
+</head>
+
+<body>
+
+<div class="w-full max-w-[380px] flex justify-between items-center mb-2">
+  <h2 class="text-white font-extrabold tracking-widest">
+    LEVEL 6B QUIZ
+  </h2>
+
+  <button id="soundToggle" class="sound-btn">
+    🔊 ON
+  </button>
+</div>
+
+<div class="card">
+  <div id="question" class="question-text"></div>
+</div>
+
+<div class="answers-header">
+  <div id="counter"></div>
+  <button id="nextBtn" class="next-btn">NEXT</button>
+  <div id="score"></div>
+</div>
+
+<div id="answers" class="answers"></div>
+
+<div id="retryContainer" class="w-full max-w-[380px] flex justify-center"></div>
+
+<!-- AUDIO -->
+<audio id="correctSound" src="audio/correct.mp3"></audio>
+<audio id="wrongSound" src="audio/wrong.mp3"></audio>
+<audio id="passSound" src="audio/pass.mp3"></audio>
+<audio id="failSound" src="audio/fail.mp3"></audio>
+
+<script>
+
+/* SOUND SYSTEM */
+let soundEnabled = true;
+
+function playSound(sound){
+  if(!soundEnabled) return;
+
+  document.querySelectorAll("audio").forEach(a=>{
+    a.pause();
+    a.currentTime = 0;
+  });
+
+  sound.play();
+}
+
+/* SOUND TOGGLE */
+const soundToggle = document.getElementById("soundToggle");
+
+soundToggle.onclick = () => {
+  soundEnabled = !soundEnabled;
+  soundToggle.innerText = soundEnabled ? "🔊 ON" : "🔇 OFF";
+};
+
+/* QUESTIONS */
+const questions = [
+
+{
+question: "Your work has been _____________ so we're going to give you a small pay-rise",
+options: ["regular","well","satisfactory","available"],
+answer: 2
+},
+{
+question: "That's the best horse in the ____________",
+options: ["career","run","rate","race"],
+answer: 3
+},
+{
+question: "The weather ___________ says it'll rain tomorrow",
+options: ["provisions","forecast","advertisement","advice"],
+answer: 1
+},
+{
+question: "There are a lot of mistakes here. I'll have to _____________ it again with you",
+options: ["come through","go over","repass","instruct"],
+answer: 1
+},
+{
+question: "If there are no buses, we'll have to take a taxi. We have to get there ___________",
+options: ["somehow or other","on one way or another","somewhere or other","anyway or other"],
+answer: 0
+},
+{
+question: "________ I read, the more I understand",
+options: ["The more","So much","How much","For how much"],
+answer: 0
+},
+{
+question: "________ he does his work, I don't mind what time he gets to the office",
+options: ["So far as","So long as","In case","Meanwhile"],
+answer: 1
+},
+{
+question: "________ entering the house, he found everyone waiting for him",
+options: ["At","While","On","In"],
+answer: 2
+},
+{
+question: "It's been years __________ the guitar",
+options: ["that I don't play","that I didn't play","since I played","ago I played"],
+answer: 2
+},
+{
+question: "I found the first question _________",
+options: ["to be easy","the easier","that it was easy","easy"],
+answer: 3
+},
+{
+question: "_________ an empty seat at the back of the bus",
+options: ["She happened to find","She happened to meet","It happened that she found","It happened that she met"],
+answer: 0
+},
+{
+question: "It was raining, __________ was a pity",
+options: ["what","that","the which","which"],
+answer: 3
+},
+{
+question: "Your car is _____________ mine",
+options: ["the same that","as","alike","similar to"],
+answer: 3
+},
+{
+question: "I'm going away for a _____________",
+options: ["holiday of a week","week holiday","holiday week","week's holiday"],
+answer: 3
+},
+{
+question: "Why ________? It's not important",
+options: ["to worry","worry","you are worried","you worry"],
+answer: 1
+},
+{
+question: "I don't like ___________ at me",
+options: ["them shouting","them shout","their shout","that they shout"],
+answer: 0
+},
+{
+question: "It often snows _______ January",
+options: ["on","in","for","at"],
+answer: 1
+},
+{
+question: "I'll see you again ___________ the weekend",
+options: ["by","on","at","for"],
+answer: 2
+},
+{
+question: "It's the first turning ________ the left after the traffic-lights",
+options: ["on","in","by","for"],
+answer: 0
+},
+{
+question: "He wasn't ______________ to lift the box",
+options: ["too strong","strong enough","so strong","enough strong"],
+answer: 1
+},
+{
+question: "He can climb trees ___________ a monkey",
+options: ["as","like","the same that","similar than"],
+answer: 1
+},
+{
+question: "He ______________ lives in the house where he was born",
+options: ["still","yet","already","ever"],
+answer: 0
+},
+{
+question: "It's 10 o'clock in the morning, but he's still ____________",
+options: ["at the bed","at bed","in bed","in the bed"],
+answer: 2
+},
+{
+question: "He was a good swimmer so he ________ swim to the river bank when the boat sank",
+options: ["could","might","succeeded to","was able to"],
+answer: 3
+},
+{
+question: "She's been very kind, _________?",
+options: ["isn't she","hasn't she","wasn't she","doesn't she"],
+answer: 1
+},
+{
+question: "He was left alone, with ___________ to look after him",
+options: ["someone","no one","anyone","not one"],
+answer: 1
+},
+{
+question: "I pulled the handle _______________ I could",
+options: ["so hardly as","as hardly as","so hard as","as hard as"],
+answer: 3
+},
+{
+question: "Have you got a match? I've left my ___________ at home",
+options: ["cigarette lighter","cigarettes lighter","lighter for cigarettes","cigarette's lighter"],
+answer: 0
+},
+{
+question: "That's the dog ___________",
+options: ["after which we've been looking","we've been looking after","we've been taking care for","what we've been looking after"],
+answer: 1
+},
+{
+question: "I made him _______________ what I had told him",
+options: ["repeating","repeat","to repeat","that he repeated"],
+answer: 1
+},
+{
+question: "I was _________ tired that I had to rest",
+options: ["so much","so","enough","too"],
+answer: 1
+},
+{
+question: "He ______________ live in the country than in the city",
+options: ["prefers","like better to","had better","would rather"],
+answer: 3
+},
+{
+question: "He ____________ his sister",
+options: ["remembers me of","remembers me","reminds me","reminds me of"],
+answer: 3
+},
+{
+question: "Put your coat on ____________ it rains",
+options: ["because","for","in any case","in case"],
+answer: 3
+},
+{
+question: "I'm going to spend a few days with some _____________ of mine who live in London",
+options: ["relatives","familiars","neighbours","parents"],
+answer: 0
+},
+{
+question: "The ______ outside the house said No Parking",
+options: ["advice","signal","label","notice"],
+answer: 3
+},
+{
+question: "He has no __________ of winning",
+options: ["occasion","luck","opportunity","chance"],
+answer: 3
+},
+{
+question: "Those people are speaking a language I don't understand. They must be __________",
+options: ["foreign","strange","rare","outlandish"],
+answer: 0
+},
+{
+question: "I didn't write it. That is not my ____________ on the cheque",
+options: ["mark","letter","firm","signature"],
+answer: 3
+},
+{
+question: "The actors have to ______________ before they appear on stage",
+options: ["cover up","paint up","make up","do up"],
+answer: 2
+},
+{
+question: "It's a difficult problem but we must find the answer ___________",
+options: ["somehow or other","anyhow or other","anyway or other","by one way or other"],
+answer: 0
+},
+{
+question: "I want ______________ at once",
+options: ["that this work is made","that this work is done","this work done","this work made"],
+answer: 2
+},
+{
+question: "He's used to _______________ in public",
+options: ["speak","speaking","be speaking","the speaking"],
+answer: 1
+},
+{
+question: "You can fly to London this evening _______you don't mind changing planes in Paris",
+options: ["providing","except","unless","so far as"],
+answer: 0
+},
+{
+question: "It's been ages _________ him",
+options: ["that I don't see","ago I saw","since I saw","that I didn't see"],
+answer: 2
+},
+{
+question: "He made me ___________",
+options: ["to be angry","angry","that I was angry","that I got angry"],
+answer: 1
+},
+{
+question: "Do what you think is right, __________ they say",
+options: ["however","whatever","whichever","whoever"],
+answer: 1
+},
+{
+question: "He arrived late, ___________ was annoying",
+options: ["what","that","which","the which"],
+answer: 2
+},
+{
+question: "His job is ____________ yours",
+options: ["not the same of","different by","similar at","not very different from"],
+answer: 3
+},
+{
+question: "He needs a ____________",
+options: ["few days rest","few days' rest","few day's rest","rest of few days"],
+answer: 1
+},
+{
+question: "Do you know _____________ the repairs?",
+options: ["how do","how make","how to do","how to make"],
+answer: 3
+},
+{
+question: "We often get fine weather ___________ Easter",
+options: ["in","on","around","by"],
+answer: 2
+},
+{
+question: "My flat is _____________ the third floor",
+options: ["on","by","at","in"],
+answer: 0
+},
+{
+question: "They live ______________ the other side of the street",
+options: ["in","at","on","by"],
+answer: 2
+},
+{
+question: "He isn't ______________ to reach the top shelf",
+options: ["enough tall","high enough","so much tall","tall enough"],
+answer: 3
+},
+{
+question: "They treated him ____________ a king after winning the competition",
+options: ["as","like","as if he is","like he was"],
+answer: 1
+},
+{
+question: "I've told him several times but he ______________ doesn't understand",
+options: ["yet","still","already","any more"],
+answer: 1
+},
+{
+question: "_________ did you go in the car this morning?",
+options: ["How far","How much far","How long","How much"],
+answer: 0
+},
+{
+question: "He'd done that before, _________?",
+options: ["wouldn't he","didn't he","hadn't he","shouldn't he"],
+answer: 2
+},
+{
+question: "__________ of them understood me",
+options: ["No one","Anyone","Someone","None"],
+answer: 3
+},
+{
+question: "It's ________________ river in the world",
+options: ["longer than","more longest","the most long","the longest"],
+answer: 3
+},
+{
+question: "I'm going to a concert tomorrow evening - So _____",
+options: ["I will","am I","will I","I am"],
+answer: 1
+},
+{
+question: "That's the company ___________",
+options: ["we've been dealing with","what we've been dealing with","what we've been treating with","we've been treating with"],
+answer: 0
+},
+{
+question: "She let the children _________ to play",
+options: ["going out","that they went out","to go out","go out"],
+answer: 3
+},
+{
+question: "It was _____________ that he couldn't do it alone",
+options: ["a so difficult work","such a difficult job","a so difficult job","such a difficult work"],
+answer: 1
+},
+{
+question: "I _____________ photographs",
+options: ["enjoy taking","enjoy to take","amuse taking","amuse to take"],
+answer: 0
+},
+{
+question: "I ______________ me what happened",
+options: ["would like you tell","would like you to tell","would like that you tell","would like that you telling"],
+answer: 1
+},
+{
+question: "___________ he wasn't hungry, he ate a big meal",
+options: ["Although","In spite","Unless","Even"],
+answer: 0
+}
+
+];
+
+
+/* SHUFFLE (FISHER-YATES) */
+function shuffle(arr){
+  let newArr = [...arr];
+
+  for(let i = newArr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+
+  return newArr;
+}
+
+let quiz = [];
+let index = 0;
+let score = 0;
+
+/* START QUIZ */
+function startQuiz(){
+
+  quiz = shuffle([...questions]).slice(0,15);
+
+  index = 0;
+  score = 0;
+
+  document.getElementById("answers").style.display = "flex";
+  document.getElementById("nextBtn").style.display = "flex";
+  document.getElementById("retryContainer").innerHTML = "";
+
+  showQuestion();
+}
+
+/* SHOW QUESTION */
+function showQuestion(){
+  const q = quiz[index];
+
+  const cleanQuestion = q.question
+    .replace(/^\d+\)\s*/, "")
+    .replace(/\.$/, "");
+
+  document.getElementById("question").innerText = cleanQuestion;
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  q.options.forEach((opt,i)=>{
+    const btn = document.createElement("button");
+
+    const letters = ["a)","b)","c)","d)"];
+    btn.innerHTML = `<span style="color: var(--it-red); font-weight:800; display:inline-block; width:28px;">${letters[i]}</span>${opt}`;
+
+    btn.className = "answer-btn";
+
+    btn.onclick = ()=>checkAnswer(i, q.answer);
+
+    answersDiv.appendChild(btn);
+  });
+
+  document.getElementById("nextBtn").disabled = true;
+
+  updateScore();
+}
+
+/* CHECK ANSWER */
+function checkAnswer(selected, correct){
+  const buttons = document.querySelectorAll(".answer-btn");
+
+  const correctSound = document.getElementById("correctSound");
+  const wrongSound = document.getElementById("wrongSound");
+
+  buttons.forEach((b,i)=>{
+    if(i === correct) b.classList.add("correct");
+    if(i === selected && selected !== correct) b.classList.add("wrong");
+    b.disabled = true;
+  });
+
+  if(selected === correct){
+    score++;
+    playSound(correctSound);
+  } else {
+    playSound(wrongSound);
+  }
+
+  document.getElementById("nextBtn").disabled = false;
+}
+
+/* UPDATE SCORE */
+function updateScore(){
+  document.getElementById("score").innerText =
+    `${score} / ${quiz.length}`;
+
+  document.getElementById("counter").innerText =
+    `${index + 1} / ${quiz.length}`;
+}
+
+/* END QUIZ */
+function endQuiz(){
+  const percent = (score / quiz.length) * 100;
+
+  const passSound = document.getElementById("passSound");
+  const failSound = document.getElementById("failSound");
+
+  if(percent >= 70){
+    document.getElementById("question").innerText =
+      "WELL DONE! YOU'VE PASSED! 🎉";
+    playSound(passSound);
+  } else {
+    document.getElementById("question").innerText =
+      "BAD LUCK! TRY AGAIN ❌";
+    playSound(failSound);
+  }
+
+  document.getElementById("answers").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+
+  document.getElementById("retryContainer").innerHTML =
+    `<button class="retry-btn">TRY AGAIN</button>`;
+
+  document.querySelector(".retry-btn").onclick = startQuiz;
+}
+
+/* NEXT BUTTON */
+document.getElementById("nextBtn").onclick = function(){
+  if(index === quiz.length - 1){
+    endQuiz();
+    return;
+  }
+  index++;
+  showQuestion();
+};
+
+/* INIT */
+startQuiz();
+
+</script>
+
+</body>
+</html>
