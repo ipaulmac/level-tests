@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quiz Level 8</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root{
+  --bg-blue:#061247;
+  --front-purple:#561386;
+  --it-red:#8C0327;
+}
+
+body{
+  background:var(--bg-blue);
+  font-family:system-ui;
+  margin:0;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* CARD */
+.card{
+  width:90vw;
+  max-width:380px;
+  height:40vw;
+  max-height:180px;
+  background:white;
+  border:4px solid var(--it-red);
+  border-radius:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0.8rem;
+  text-align:center;
+}
+
+.question-text{
+  font-weight:800;
+  text-transform:uppercase;
+  font-size:clamp(0.95rem, 2.8vw, 1.1rem);
+  color:var(--front-purple);
+  line-height:1.3;
+}
+
+/* HEADER */
+.answers-header{
+  width:90vw;
+  max-width:380px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  margin-top:8px;
+  margin-bottom:4px;
+}
+
+#counter{
+  color:white;
+  font-weight:800;
+  font-size:0.95rem;
+}
+
+#score{
+  color:#FFD700;
+  font-weight:800;
+  font-size:0.95rem;
+  text-align:right;
+}
+
+.next-btn{
+  background:#00cfd5;
+  color:#061247;
+  font-weight:800;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 12px;
+  font-size:0.8rem;
+}
+
+/* SOUND BUTTON */
+.sound-btn{
+  background:white;
+  color:#061247;
+  font-weight:800;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 12px;
+  font-size:0.8rem;
+}
+
+/* ANSWERS GRID */
+.answers{
+  width:90vw;
+  max-width:380px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:12px;
+}
+
+/* BUTTONS */
+.answer-btn{
+  width:100%;
+  min-height:50px;
+  background:#eef2f7;
+  color:var(--front-purple);
+  font-weight:700;
+  border-radius:10px;
+  border:1px solid #cbd5e1;
+
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:left;
+
+  padding:10px 12px;
+  font-size:0.95rem;
+  line-height:1.3;
+
+  white-space: normal;
+  word-break: break-word;
+
+  transition: transform 0.08s ease, background 0.12s ease;
+}
+
+.answer-btn:active{
+  transform: scale(0.94);
+  background:#dbe3ec;
+}
+
+.next-btn{
+  transition: transform 0.1s ease;
+}
+
+.next-btn:active{
+  transform: scale(0.95);
+}
+
+.correct{
+  background:#22c55e;
+  color:white;
+  box-shadow:0 0 10px #22c55e;
+  transform:scale(1.05);
+}
+
+.wrong{
+  background:#ef4444;
+  color:white;
+}
+
+/* RETRY BUTTON */
+.retry-btn{
+  all:unset;
+  background:var(--front-purple);
+  color:white;
+  font-weight:800;
+  border-radius:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 18px;
+  font-size:0.9rem;
+  cursor:pointer;
+  margin-top:12px;
+}
+
+.retry-btn:active{
+  transform:scale(0.96);
+}
+</style>
+</head>
+
+<body>
+
+<div class="w-full max-w-[380px] flex justify-between items-center mb-2">
+  <h2 class="text-white font-extrabold tracking-widest">
+    LEVEL 8 QUIZ
+  </h2>
+
+  <button id="soundToggle" class="sound-btn">
+    🔊 ON
+  </button>
+</div>
+
+<div class="card">
+  <div id="question" class="question-text"></div>
+</div>
+
+<div class="answers-header">
+  <div id="counter"></div>
+  <button id="nextBtn" class="next-btn">NEXT</button>
+  <div id="score"></div>
+</div>
+
+<div id="answers" class="answers"></div>
+
+<div id="retryContainer" class="w-full max-w-[380px] flex justify-center"></div>
+
+<!-- AUDIO -->
+<audio id="correctSound" src="audio/correct.mp3"></audio>
+<audio id="wrongSound" src="audio/wrong.mp3"></audio>
+<audio id="passSound" src="audio/pass.mp3"></audio>
+<audio id="failSound" src="audio/fail.mp3"></audio>
+
+<script>
+
+/* SOUND SYSTEM */
+let soundEnabled = true;
+
+function playSound(sound){
+  if(!soundEnabled) return;
+
+  document.querySelectorAll("audio").forEach(a=>{
+    a.pause();
+    a.currentTime = 0;
+  });
+
+  sound.play();
+}
+
+/* SOUND TOGGLE */
+const soundToggle = document.getElementById("soundToggle");
+
+soundToggle.onclick = () => {
+  soundEnabled = !soundEnabled;
+  soundToggle.innerText = soundEnabled ? "🔊 ON" : "🔇 OFF";
+};
+
+/* QUESTIONS */
+const questions = [
+
+{
+question: "The bank is offering a ______________ to anyone able to give information regarding the robbery",
+options: ["compensation","prize","reward","premium"],
+answer: 2
+},
+{
+question: "Don't leave your bike out in the rain! It'll get _________",
+options: ["rusty","rough","crude","tough"],
+answer: 0
+},
+{
+question: "The landlord told him to leave because he hadn't paid his _________",
+options: ["due","fee","rent","hire"],
+answer: 2
+},
+{
+question: "She's fainted.Throw some water on her face and she may __________",
+options: ["come round","come back","come again","come out"],
+answer: 0
+},
+{
+question: "I'm afraid you've been _________ . This banknote is a forgery",
+options: ["taken in","taken up","taken down","taken out"],
+answer: 0
+},
+{
+question: "They're ___________ to build a big factory on this site",
+options: ["planning","thinking","projecting","pretending"],
+answer: 0
+},
+{
+question: "I couldn't ____________ the meeting because I was so busy",
+options: ["assist","attend","attempt","present"],
+answer: 1
+},
+{
+question: "We've __________ sugar. Ask the neighbours to lend us some",
+options: ["run away with","run down","run off","run out of"],
+answer: 3
+},
+{
+question: "He has been _____________ of murdering his wife",
+options: ["blamed","charged","accused","arrested"],
+answer: 2
+},
+{
+question: "Drive carefully because there are a lot of ______________ in the road for the next 2 kilometres",
+options: ["curls","folds","bends","crosses"],
+answer: 2
+},
+{
+question: "The printing of the book has been held up by the paper ____________",
+options: ["scarce","shortage","lack","deficit"],
+answer: 1
+},
+{
+question: "I ____________ you that the goods will be delivered next week",
+options: ["confirm","assure","undertake","insist"],
+answer: 1
+},
+{
+question: "In many ____________ factories, machines do work previously done by men",
+options: ["actual","nowadays","modern","novel"],
+answer: 2
+},
+{
+question: "The second World War ___________ in 1939",
+options: ["broke out","broke off","broke up","broke open"],
+answer: 0
+},
+{
+question: "A foreign company has bought the shares in his company and _____________",
+options: ["taken over it","overtaken it","overcome it","taken it over"],
+answer: 3
+},
+{
+question: "I enjoyed the dish very much. Would you mind letting me have the ____________ for it?",
+options: ["menu","prescription","receipt","recipe"],
+answer: 3
+},
+{
+question: "In the days before typewriters were invented, thousands of people were employed as ___________ , copying everything by hand",
+options: ["dependants","clerks","assistants","officials"],
+answer: 1
+},
+{
+question: "She ___________ and fell from the top to the bottom of the stairs",
+options: ["slipped","split","sloped","spilt"],
+answer: 0
+},
+{
+question: "The professor thanked the audience for listening to his ___________ on Shakespeare",
+options: ["lecture","conference","rehearsal","recital"],
+answer: 0
+},
+{
+question: "No one imagined that the apparently _____________ businessman was really a conman",
+options: ["respectful","respective","respectable","reverent"],
+answer: 2
+},
+{
+question: "There was an interesting ______________ of the film in the newspaper",
+options: ["comment","resumé","revision","review"],
+answer: 3
+},
+{
+question: "He bought the car on the ___________ plan, paying a certain amount of money each month",
+options: ["piece","share","instalment","rate"],
+answer: 3
+},
+{
+question: "The good service at the hotel _______________ the poor food, to some extent",
+options: ["made up for","made up","made for","made out"],
+answer: 0
+},
+{
+question: "We can never relax in this office. New problems are continually ____________",
+options: ["coming out","coming up","raising","presenting itself"],
+answer: 1
+},
+{
+question: "I didn't realise you wanted to keep the document. I've already _______ it up",
+options: ["broken","torn","smashed","pulled"],
+answer: 1
+},
+{
+question: "His parents died in a car accident when he was young so he was brought up by a ___________",
+options: ["warden","stepfather","father-in-law","guardian"],
+answer: 3
+},
+{
+question: "I sometimes have the _______________ to visit Paris on business",
+options: ["opportunity","occasion","possibility","chance"],
+answer: 3
+},
+{
+question: "If you ____________ in taking this attitude, we'll have to ask you to leave",
+options: ["persist","insist","resist","pursue"],
+answer: 0
+},
+{
+question: "He talked so much during the match that he ______________ my game",
+options: ["put me out of","put me off","put me away from","put me apart from"],
+answer: 1
+},
+{
+question: "He _____________ his engagement just before the wedding",
+options: ["broke off","broke out","broke away from","broke out of"],
+answer: 0
+},
+{
+question: "His parents died when he was young so he was ___________ by his uncle",
+options: ["brought up","grown up","brought out","taken out"],
+answer: 0
+},
+{
+question: "When he ____________ at the age of 65, he will probably get a gold watch!",
+options: ["dismisses","resigns","retires","pensions"],
+answer: 2
+},
+{
+question: "The gorilla fell into the _____________ the hunters had set for it",
+options: ["trail","trap","trick","trip"],
+answer: 1
+},
+{
+question: "The weather forecast was good so it should ____________ fine after all",
+options: ["turn into","turn out","turn over","turn up"],
+answer: 1
+},
+{
+question: "I had to stand in a _______________ for hours to get tickets for the concert",
+options: ["file","tail","queue","procession"],
+answer: 2
+},
+{
+question: "The school claims to be able to _________________ students Spanish in three months",
+options: ["teach","learn","instruct","explain"],
+answer: 0
+},
+{
+question: "He'll ____________ his nervousness once he's on stage",
+options: ["get away","get off","get through","get over"],
+answer: 3
+},
+{
+question: "As soon as his party came into ______________ they changed the law",
+options: ["force","strength","power","position"],
+answer: 2
+},
+{
+question: "Roses are quite _______________ flowers in English gardens",
+options: ["accustomed","ordinary","common","vulgar"],
+answer: 2
+},
+{
+question: "You could tell from his big ears that he _____________ his father",
+options: ["took after","took down","took from","took off"],
+answer: 0
+},
+{
+question: "There are several landlords approved by the university who take in _________________",
+options: ["lodgers","residents","inhabitants","settlers"],
+answer: 0
+},
+{
+question: "This ____________ of dog is very useful for hunting",
+options: ["tribe","stock","breed","clan"],
+answer: 2
+},
+{
+question: "He shook hands with his _____________ before the match",
+options: ["opposition","opponent","contestant","competitor"],
+answer: 1
+},
+{
+question: "If you don't put the milk in the fridge, it may _________",
+options: ["go out","go off","go wrong","go badly"],
+answer: 1
+},
+{
+question: "She ______________ us because she went to an exclusive school in Switzerland",
+options: ["looks above","looks down on","looks up on","looks over"],
+answer: 1
+},
+{
+question: "This test _____________ a number of multiple-choice questions",
+options: ["composes of","composes in","consists of","consists in"],
+answer: 2
+},
+{
+question: "There could have been a war over it but, in the end, commonsense _____________",
+options: ["induced","counted","prevailed","survived"],
+answer: 2
+},
+{
+question: "They have asked us to ________________ in the negotiations",
+options: ["involve","be mixed","partecipate","take place"],
+answer: 2
+},
+{
+question: "I _____________ on seeing the manager. The service here is terrible",
+options: ["insist","persist","affirm","protest"],
+answer: 0
+},
+{
+question: "I caught a ___________ of the car before it disappeared round the bend",
+options: ["glimpse","glance","glare","gleam"],
+answer: 0
+},
+{
+question: "Would you please ____________ from smoking during the meeting?",
+options: ["avoid","refrain","stop","keep yourself"],
+answer: 1
+},
+{
+question: "This country needs a ___________ government. We've had three Prime Ministers in a year",
+options: ["stable","stationary","changeless","constant"],
+answer: 0
+},
+{
+question: "A sergeant in the army wears three ____________ on his arm",
+options: ["stripes","streaks","strips","scratches"],
+answer: 0
+},
+{
+question: "Hot metal _____________ as it grows cooler",
+options: ["reduces","condenses","compresses","contracts"],
+answer: 3
+},
+{
+question: "He __________ a very busy life",
+options: ["leads","follows","carries","runs"],
+answer: 0
+},
+{
+question: "He ______________ the money out of her hand and ran away",
+options: ["clutched","snatched","gripped","withdrew"],
+answer: 1
+},
+{
+question: "I was unable to ____________ him to do as I said",
+options: ["dispose","prevail","persuade","convince"],
+answer: 2
+},
+{
+question: "He thinks about nothing but playing golf. He's completely _____________ to it",
+options: ["addicted","ascribed","tempted","overcome"],
+answer: 0
+},
+{
+question: "I'm going into the garden to ___________ some flowers",
+options: ["grip","seize","snatch","pick"],
+answer: 3
+},
+{
+question: "We finally ______________ an agreement after a lot of hard bargaining",
+options: ["reached","arrived","did","drove"],
+answer: 0
+},
+{
+question: "He accidentally ___________ fire to the house",
+options: ["put","set","gave","started"],
+answer: 1
+},
+{
+question: "He's always ______________ the Government but he never votes in the elections",
+options: ["calling out","calling off","running down","running out"],
+answer: 2
+},
+{
+question: "The factory has increased its ____________ by 10% this year",
+options: ["product","output","make-up","exposure"],
+answer: 1
+}
+];
+
+
+/* SHUFFLE (FISHER-YATES) */
+function shuffle(arr){
+  let newArr = [...arr];
+
+  for(let i = newArr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+
+  return newArr;
+}
+
+let quiz = [];
+let index = 0;
+let score = 0;
+
+/* START QUIZ */
+function startQuiz(){
+
+  quiz = shuffle([...questions]).slice(0,15);
+
+  index = 0;
+  score = 0;
+
+  document.getElementById("answers").style.display = "flex";
+  document.getElementById("nextBtn").style.display = "flex";
+  document.getElementById("retryContainer").innerHTML = "";
+
+  showQuestion();
+}
+
+/* SHOW QUESTION */
+function showQuestion(){
+  const q = quiz[index];
+
+  const cleanQuestion = q.question
+    .replace(/^\d+\)\s*/, "")
+    .replace(/\.$/, "");
+
+  document.getElementById("question").innerText = cleanQuestion;
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  q.options.forEach((opt,i)=>{
+    const btn = document.createElement("button");
+
+    const letters = ["a)","b)","c)","d)"];
+    btn.innerHTML = `<span style="color: var(--it-red); font-weight:800; display:inline-block; width:28px;">${letters[i]}</span>${opt}`;
+
+    btn.className = "answer-btn";
+
+    btn.onclick = ()=>checkAnswer(i, q.answer);
+
+    answersDiv.appendChild(btn);
+  });
+
+  document.getElementById("nextBtn").disabled = true;
+
+  updateScore();
+}
+
+/* CHECK ANSWER */
+function checkAnswer(selected, correct){
+  const buttons = document.querySelectorAll(".answer-btn");
+
+  const correctSound = document.getElementById("correctSound");
+  const wrongSound = document.getElementById("wrongSound");
+
+  buttons.forEach((b,i)=>{
+    if(i === correct) b.classList.add("correct");
+    if(i === selected && selected !== correct) b.classList.add("wrong");
+    b.disabled = true;
+  });
+
+  if(selected === correct){
+    score++;
+    playSound(correctSound);
+  } else {
+    playSound(wrongSound);
+  }
+
+  document.getElementById("nextBtn").disabled = false;
+}
+
+/* UPDATE SCORE */
+function updateScore(){
+  document.getElementById("score").innerText =
+    `${score} / ${quiz.length}`;
+
+  document.getElementById("counter").innerText =
+    `${index + 1} / ${quiz.length}`;
+}
+
+/* END QUIZ */
+function endQuiz(){
+  const percent = (score / quiz.length) * 100;
+
+  const passSound = document.getElementById("passSound");
+  const failSound = document.getElementById("failSound");
+
+  if(percent >= 70){
+    document.getElementById("question").innerText =
+      "WELL DONE! YOU'VE PASSED! 🎉";
+    playSound(passSound);
+  } else {
+    document.getElementById("question").innerText =
+      "BAD LUCK! TRY AGAIN ❌";
+    playSound(failSound);
+  }
+
+  document.getElementById("answers").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+
+  document.getElementById("retryContainer").innerHTML =
+    `<button class="retry-btn">TRY AGAIN</button>`;
+
+  document.querySelector(".retry-btn").onclick = startQuiz;
+}
+
+/* NEXT BUTTON */
+document.getElementById("nextBtn").onclick = function(){
+  if(index === quiz.length - 1){
+    endQuiz();
+    return;
+  }
+  index++;
+  showQuestion();
+};
+
+/* INIT */
+startQuiz();
+
+</script>
+
+</body>
+</html>
