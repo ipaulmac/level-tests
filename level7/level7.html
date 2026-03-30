@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quiz Level 7</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root{
+  --bg-blue:#061247;
+  --front-purple:#561386;
+  --it-red:#8C0327;
+}
+
+body{
+  background:var(--bg-blue);
+  font-family:system-ui;
+  margin:0;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* CARD */
+.card{
+  width:90vw;
+  max-width:380px;
+  height:40vw;
+  max-height:180px;
+  background:white;
+  border:4px solid var(--it-red);
+  border-radius:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0.8rem;
+  text-align:center;
+}
+
+.question-text{
+  font-weight:800;
+  text-transform:uppercase;
+  font-size:clamp(0.95rem, 2.8vw, 1.1rem);
+  color:var(--front-purple);
+  line-height:1.3;
+}
+
+/* HEADER */
+.answers-header{
+  width:90vw;
+  max-width:380px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  margin-top:8px;
+  margin-bottom:4px;
+}
+
+#counter{
+  color:white;
+  font-weight:800;
+  font-size:0.95rem;
+}
+
+#score{
+  color:#FFD700;
+  font-weight:800;
+  font-size:0.95rem;
+  text-align:right;
+}
+
+.next-btn{
+  background:#00cfd5;
+  color:#061247;
+  font-weight:800;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 12px;
+  font-size:0.8rem;
+}
+
+/* SOUND BUTTON */
+.sound-btn{
+  background:white;
+  color:#061247;
+  font-weight:800;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 12px;
+  font-size:0.8rem;
+}
+
+/* ANSWERS GRID */
+.answers{
+  width:90vw;
+  max-width:380px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:12px;
+}
+
+/* BUTTONS */
+.answer-btn{
+  width:100%;
+  min-height:50px;
+  background:#eef2f7;
+  color:var(--front-purple);
+  font-weight:700;
+  border-radius:10px;
+  border:1px solid #cbd5e1;
+
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:left;
+
+  padding:10px 12px;
+  font-size:0.95rem;
+  line-height:1.3;
+
+  white-space: normal;
+  word-break: break-word;
+
+  transition: transform 0.08s ease, background 0.12s ease;
+}
+
+.answer-btn:active{
+  transform: scale(0.94);
+  background:#dbe3ec;
+}
+
+.next-btn{
+  transition: transform 0.1s ease;
+}
+
+.next-btn:active{
+  transform: scale(0.95);
+}
+
+.correct{
+  background:#22c55e;
+  color:white;
+  box-shadow:0 0 10px #22c55e;
+  transform:scale(1.05);
+}
+
+.wrong{
+  background:#ef4444;
+  color:white;
+}
+
+/* RETRY BUTTON */
+.retry-btn{
+  all:unset;
+  background:var(--front-purple);
+  color:white;
+  font-weight:800;
+  border-radius:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 18px;
+  font-size:0.9rem;
+  cursor:pointer;
+  margin-top:12px;
+}
+
+.retry-btn:active{
+  transform:scale(0.96);
+}
+</style>
+</head>
+
+<body>
+
+<div class="w-full max-w-[380px] flex justify-between items-center mb-2">
+  <h2 class="text-white font-extrabold tracking-widest">
+    LEVEL 7 QUIZ
+  </h2>
+
+  <button id="soundToggle" class="sound-btn">
+    🔊 ON
+  </button>
+</div>
+
+<div class="card">
+  <div id="question" class="question-text"></div>
+</div>
+
+<div class="answers-header">
+  <div id="counter"></div>
+  <button id="nextBtn" class="next-btn">NEXT</button>
+  <div id="score"></div>
+</div>
+
+<div id="answers" class="answers"></div>
+
+<div id="retryContainer" class="w-full max-w-[380px] flex justify-center"></div>
+
+<!-- AUDIO -->
+<audio id="correctSound" src="audio/correct.mp3"></audio>
+<audio id="wrongSound" src="audio/wrong.mp3"></audio>
+<audio id="passSound" src="audio/pass.mp3"></audio>
+<audio id="failSound" src="audio/fail.mp3"></audio>
+
+<script>
+
+/* SOUND SYSTEM */
+let soundEnabled = true;
+
+function playSound(sound){
+  if(!soundEnabled) return;
+
+  document.querySelectorAll("audio").forEach(a=>{
+    a.pause();
+    a.currentTime = 0;
+  });
+
+  sound.play();
+}
+
+/* SOUND TOGGLE */
+const soundToggle = document.getElementById("soundToggle");
+
+soundToggle.onclick = () => {
+  soundEnabled = !soundEnabled;
+  soundToggle.innerText = soundEnabled ? "🔊 ON" : "🔇 OFF";
+};
+
+/* QUESTIONS */
+const questions = [
+
+{
+question: "The lift is out of ______________ so we'll have to walk",
+options: ["function","order","running","work"],
+answer: 1
+},
+{
+question: "Dinner will be ready _____________ but we have time for a drink before then",
+options: ["currently","lately","presently","suddenly"],
+answer: 2
+},
+{
+question: "What do you __________________ to do about the problem now that this solution has failed?",
+options: ["attempt","think","pretend","intend"],
+answer: 3
+},
+{
+question: "We have _________________ for a new secretary but we haven't had any replies yet",
+options: ["advertised","advised","announced","noticed"],
+answer: 0
+},
+{
+question: "I've ____________ for the job and I hope I get it",
+options: ["appointed","applied","presented","succeeded"],
+answer: 1
+},
+{
+question: "He threw the box out of the window and it fell onto the _________outside",
+options: ["flat","floor","plain","ground"],
+answer: 3
+},
+{
+question: "100 competitors had ____________ the race",
+options: ["put their names for","entered for","put themselves for","taken part"],
+answer: 1
+},
+{
+question: "I'm very _____________ to you for your help",
+options: ["grateful","agreeable","pleased","thanks"],
+answer: 0
+},
+{
+question: "He's so mean that he wouldn't give a beggar a _____________ of bread",
+options: ["peel","shell","crust","skin"],
+answer: 2
+},
+{
+question: "Will you be able to come to the party? - I __________",
+options: ["believe yes","am afraid not","don't hope so","don't expect"],
+answer: 1
+},
+{
+question: "I never expected you to turn _________ at the meeting",
+options: ["around","on","in","up"],
+answer: 3
+},
+{
+question: "The plane is about to take ___________",
+options: ["away","off","out","up"],
+answer: 1
+},
+{
+question: "He ______________ me by two games to one",
+options: ["beat","conquered","gained","won"],
+answer: 0
+},
+{
+question: "His office is on the third ____________ of the building",
+options: ["floor","flat","ground","level"],
+answer: 0
+},
+{
+question: "How long are you thinking of __________ in this country?",
+options: ["reminding","staying","resting","inhabiting"],
+answer: 1
+},
+{
+question: "I don't want to go into the sea. I'd rather lie on the _____________",
+options: ["coast","beach","bank","seaside"],
+answer: 1
+},
+{
+question: "I'm __________ I didn't pass the exam but I'll do better next time",
+options: ["deceived","despaired","disillusioned","disappointed"],
+answer: 3
+},
+{
+question: "The lecture was so _________ that everyone went to sleep",
+options: ["boring","bored","tiring","tired"],
+answer: 0
+},
+{
+question: "I _________ an answer to my letter within a few days",
+options: ["hope","wait","look forward","expect"],
+answer: 3
+},
+{
+question: "When he _____________ he wants to be an architect",
+options: ["ages","grows","grows up","increases"],
+answer: 2
+},
+{
+question: "It's on the top shelf, out of _____________",
+options: ["distance","reach","touch","attempt"],
+answer: 1
+},
+{
+question: "He's worked so ______________ that he deserves a rest",
+options: ["roughly","intensive","hardly","hard"],
+answer: 3
+},
+{
+question: "They're staying with us _______ the time being until they find a place of their own",
+options: ["during","in","since","for"],
+answer: 3
+},
+{
+question: "I'll call _________ you at 8.30 and give you a lift to work",
+options: ["in","for","at","up"],
+answer: 1
+},
+{
+question: "Would you ___________ holding this box for me while I open the door?",
+options: ["like","matter","mind","object"],
+answer: 2
+},
+{
+question: "He is _______________ dark glasses to protect his eyes from the sun",
+options: ["carrying","fitting","wearing","bearing"],
+answer: 2
+},
+{
+question: "He was told to get off the bus because he couldn't pay the _____________",
+options: ["bill","journey","fare","travel"],
+answer: 2
+},
+{
+question: "They have put the bird in a cage to ________ it from flying away",
+options: ["avoid","prevent","hinder","resist"],
+answer: 1
+},
+{
+question: "He has some very _____________ habits. For example, he takes a shower fully-clothed!",
+options: ["strange","rare","foreign","uneven"],
+answer: 0
+},
+{
+question: "The ____________ outside the house said Private",
+options: ["advice","label","notice","signal"],
+answer: 2
+},
+{
+question: "If the boss sees you doing that, you'll get into _____________",
+options: ["trouble","nuisance","mess","problem"],
+answer: 0
+},
+{
+question: "I was so __________ by the news that I was left speechless",
+options: ["admired","amazed","marvelled","wondered"],
+answer: 1
+},
+{
+question: "He's ______________ because he has won the prize",
+options: ["nervous","satisfying","excited","exciting"],
+answer: 2
+},
+{
+question: "He likes lying in bed. He still wasn't __________ when I rang at 10",
+options: ["out","up","away","in"],
+answer: 1
+},
+{
+question: "If you don't know how to spell a word, look it _____________ in the dictionary or on the internet",
+options: ["up","after","out","for"],
+answer: 0
+},
+{
+question: "He carries _____________ as if he were the boss",
+options: ["through","off","out","on"],
+answer: 3
+},
+{
+question: "He was killed in a car ___________",
+options: ["crash","blow","shock","hit"],
+answer: 0
+},
+{
+question: "All the hotels in town were fully-booked so we stayed in a _____________ village",
+options: ["close","nearby","neighbour","near"],
+answer: 1
+},
+{
+question: "He won the first __________ in the competition",
+options: ["prize","reward","price","premium"],
+answer: 0
+},
+{
+question: "Sixty per cent of viewers chose him as their ____________ actor",
+options: ["popular","favourite","preferred","favoured"],
+answer: 1
+},
+{
+question: "We've been ________ with that firm for many years",
+options: ["treating","making business","dealing","supplying"],
+answer: 2
+},
+{
+question: "I can't give you an answer yet. I'd like __________ more time to consider my decision",
+options: ["quite","fairly","hardly","rather"],
+answer: 3
+},
+{
+question: "I learnt to__________ a bike when I was six",
+options: ["drive","guide","ride","conduct"],
+answer: 2
+},
+{
+question: "The lady who had invited us heard me telling my wife that the dinner was terrible, so I was __________",
+options: ["confused","nervous","shameful","embarassed"],
+answer: 3
+},
+{
+question: "Sometimes a bus _____________ gets on the bus to check tickets",
+options: ["inspector","agent","conductor","officer"],
+answer: 2
+},
+{
+question: "Where do you ____________ the envelopes? In this desk here?",
+options: ["keep","hold","maintain","guard"],
+answer: 0
+},
+{
+question: "PTO stands _________ Please turn over - the page, of course",
+options: ["as","for","by","like"],
+answer: 1
+},
+{
+question: "He'll soon get __________ his disappointment and be quite cheerful again by the morning",
+options: ["over","out of","away","through"],
+answer: 0
+},
+{
+question: "He ___________ out of the window for a moment and then went on working",
+options: ["glanced","viewed","glimpsed","regarded"],
+answer: 0
+},
+{
+question: "It's the __________ in this country to go out and pick flowers on the first day of spring",
+options: ["use","custom","habit","normal"],
+answer: 1
+},
+{
+question: "He made a swift ____________ from his illness",
+options: ["repair","survival","relief","recovery"],
+answer: 3
+},
+{
+question: "It gave me a strange feeling of excitement to see my name in ___________",
+options: ["news","print","publication","press"],
+answer: 1
+},
+{
+question: "You'd better add it up. I'm no good at ___________",
+options: ["counters","characters","summaries","figures"],
+answer: 3
+},
+{
+question: "Our main concern is to raise the voters' ___________ of living",
+options: ["standard","capacity","degree","conditions"],
+answer: 0
+},
+{
+question: "I'd like to take __________ of this opportunity to thank you all for your help",
+options: ["profit","benefit","advantage","occasion"],
+answer: 2
+},
+{
+question: "He __________ to hit me if I didn't do as he said",
+options: ["pretended","thought","threatened","warned"],
+answer: 2
+},
+{
+question: "He doesn't feel like playing tennis because he's __________",
+options: ["out of condition","off fitness","off condition","out of fitness"],
+answer: 0
+},
+{
+question: "He's been working too hard and he's __________. He needs a rest",
+options: ["broken apart","broken up","run down","run over"],
+answer: 2
+},
+{
+question: "We went to the station to _________",
+options: ["see them out","see them off","goodbye them","say them goodbye"],
+answer: 1
+},
+{
+question: "New problems are always ____________ in the factory",
+options: ["raising","going up","waking up","coming up"],
+answer: 3
+},
+{
+question: "He ___________ the letter carefully before putting it into the envelope",
+options: ["folded","bent","turned","curved"],
+answer: 0
+},
+{
+question: "I __________ you go to the Town Hall and ask them for some information on the subject",
+options: ["advertise","announce","notice","advise"],
+answer: 3
+},
+{
+question: "He wasn't admitted to the club because he wasn't a ____________",
+options: ["partner","member","social","representative"],
+answer: 1
+},
+{
+question: "You must __________ facts and not run away from the truth",
+options: ["look","sight","front","face"],
+answer: 3
+},
+{
+question: "I ___________ to him for the error",
+options: ["excused","apologised","pardoned","forgave"],
+answer: 1
+},
+{
+question: "She's bought some lovely ____________ to make herself a dress",
+options: ["material","clothing","textile","stuff"],
+answer: 0
+},
+{
+question: "He's staying in the youth ____________ near the station",
+options: ["home","lodge","hostel","house"],
+answer: 2
+},
+{
+question: "It's no use ringing me at the office this week because I'm ____________",
+options: ["by leave","in holiday","some days off","off work"],
+answer: 3
+},
+{
+question: "____________ the White House, the Prime Minister was welcomed by the President",
+options: ["On reaching","At arrival","On arrival","At reaching"],
+answer: 0
+},
+{
+question: "He ____________ working until the age of 70",
+options: ["kept on","kept up","went up","carried off"],
+answer: 0
+},
+{
+question: "The meeting ____________ at midnight and we all went home",
+options: ["broke through","broke up","stopped up","stopped off"],
+answer: 1
+},
+{
+question: "He's not as honest as he ____________",
+options: ["makes up","makes out","gives over","gives away"],
+answer: 1
+},
+{
+question: "She chose some very pretty __________ paper for the present",
+options: ["packing","involving","covering","wrapping"],
+answer: 3
+},
+{
+question: "Everyone else in the accident was killed. He was the only one to __________",
+options: ["relieve","survive","alive","outlive"],
+answer: 1
+},
+{
+question: "That's a nice dress. It ___________ you perfectly",
+options: ["suits","costumes","matches","goes"],
+answer: 0
+},
+{
+question: "The ____________ stuck on the outside of the envelope said By Air",
+options: ["label","ticket","signal","advertisment"],
+answer: 0
+},
+{
+question: "She died after a long _________",
+options: ["disease","sickness","illness","failing"],
+answer: 2
+},
+{
+question: "I ___________ to inform you that there's nothing we can do to help",
+options: ["sorry","respect","resent","regret"],
+answer: 3
+},
+{
+question: "I'll put the sugar in this ____________. After all, that's what it's for",
+options: ["dish","plate","bowl","cup"],
+answer: 2
+},
+{
+question: "_________________, I didn't understand the job but now I'm making progress",
+options: ["On the beginning","In principle","For a start","At first"],
+answer: 3
+},
+{
+question: "Would you mind paying for the tickets ____________ ?",
+options: ["in advance","forwards","primarily","now and then"],
+answer: 0
+},
+{
+question: "How long did it take you to realise he was dishonest? - I __________ from the start",
+options: ["looked him through","saw through him","looked forward to him","saw him through"],
+answer: 1
+},
+{
+question: "We're going to have our house __________ . The decorators are coming next week",
+options: ["done up","done in","made over","made up"],
+answer: 0
+},
+{
+question: "He asked me what was __________ in the street outside",
+options: ["succeeding","doing up","going on","making out"],
+answer: 2
+},
+{
+question: "He ___________ his head, wondering how to solve the problem",
+options: ["screwed","scraped","wound","scratched"],
+answer: 3
+},
+{
+question: "I __________ him some money and I must pay him it back tomorrow",
+options: ["debt","borrowed","owe","lent"],
+answer: 2
+},
+{
+question: "Fish pie! That's my favourite _________",
+options: ["menu","receipt","dish","plate"],
+answer: 2
+},
+{
+question: "His shoes were so old that his _________ were sticking out!",
+options: ["fingers","tips","toes","thumbs"],
+answer: 2
+},
+{
+question: "He was ____________ because he was always late for work",
+options: ["retired","resigned","disposed","sacked"],
+answer: 3
+},
+{
+question: "She got married without her parents' __________",
+options: ["allowance","consent","permit","let"],
+answer: 1
+},
+{
+question: "The flight was supposed to take off at eight o'clock but ________ we had to wait until nine",
+options: ["in effect","for an end","on purpose","for result"],
+answer: 0
+},
+{
+question: "I agree with him _________ but not entirely",
+options: ["until a certain point","to some point","to some extent","until a certain extent"],
+answer: 2
+},
+{
+question: "Everything I've described went wrong. __________ , the whole affair was a disaster",
+options: ["In small","In short","Summarily","In brief words"],
+answer: 1
+},
+{
+question: "Did you ___________ the exam last year?",
+options: ["take place in","enter into","go in for","form part of"],
+answer: 2
+},
+{
+question: "We were __________ for half an hour in the traffic and so we arrived late",
+options: ["held up","put back","broken down","kept off"],
+answer: 0
+},
+{
+question: "The dog was ____________ by a bus and died",
+options: ["run over","tripped up","knocked out","fallen down"],
+answer: 0
+}
+
+];
+
+
+/* SHUFFLE (FISHER-YATES) */
+function shuffle(arr){
+  let newArr = [...arr];
+
+  for(let i = newArr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+
+  return newArr;
+}
+
+let quiz = [];
+let index = 0;
+let score = 0;
+
+/* START QUIZ */
+function startQuiz(){
+
+  quiz = shuffle([...questions]).slice(0,15);
+
+  index = 0;
+  score = 0;
+
+  document.getElementById("answers").style.display = "flex";
+  document.getElementById("nextBtn").style.display = "flex";
+  document.getElementById("retryContainer").innerHTML = "";
+
+  showQuestion();
+}
+
+/* SHOW QUESTION */
+function showQuestion(){
+  const q = quiz[index];
+
+  const cleanQuestion = q.question
+    .replace(/^\d+\)\s*/, "")
+    .replace(/\.$/, "");
+
+  document.getElementById("question").innerText = cleanQuestion;
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  q.options.forEach((opt,i)=>{
+    const btn = document.createElement("button");
+
+    const letters = ["a)","b)","c)","d)"];
+    btn.innerHTML = `<span style="color: var(--it-red); font-weight:800; display:inline-block; width:28px;">${letters[i]}</span>${opt}`;
+
+    btn.className = "answer-btn";
+
+    btn.onclick = ()=>checkAnswer(i, q.answer);
+
+    answersDiv.appendChild(btn);
+  });
+
+  document.getElementById("nextBtn").disabled = true;
+
+  updateScore();
+}
+
+/* CHECK ANSWER */
+function checkAnswer(selected, correct){
+  const buttons = document.querySelectorAll(".answer-btn");
+
+  const correctSound = document.getElementById("correctSound");
+  const wrongSound = document.getElementById("wrongSound");
+
+  buttons.forEach((b,i)=>{
+    if(i === correct) b.classList.add("correct");
+    if(i === selected && selected !== correct) b.classList.add("wrong");
+    b.disabled = true;
+  });
+
+  if(selected === correct){
+    score++;
+    playSound(correctSound);
+  } else {
+    playSound(wrongSound);
+  }
+
+  document.getElementById("nextBtn").disabled = false;
+}
+
+/* UPDATE SCORE */
+function updateScore(){
+  document.getElementById("score").innerText =
+    `${score} / ${quiz.length}`;
+
+  document.getElementById("counter").innerText =
+    `${index + 1} / ${quiz.length}`;
+}
+
+/* END QUIZ */
+function endQuiz(){
+  const percent = (score / quiz.length) * 100;
+
+  const passSound = document.getElementById("passSound");
+  const failSound = document.getElementById("failSound");
+
+  if(percent >= 70){
+    document.getElementById("question").innerText =
+      "WELL DONE! YOU'VE PASSED! 🎉";
+    playSound(passSound);
+  } else {
+    document.getElementById("question").innerText =
+      "BAD LUCK! TRY AGAIN ❌";
+    playSound(failSound);
+  }
+
+  document.getElementById("answers").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+
+  document.getElementById("retryContainer").innerHTML =
+    `<button class="retry-btn">TRY AGAIN</button>`;
+
+  document.querySelector(".retry-btn").onclick = startQuiz;
+}
+
+/* NEXT BUTTON */
+document.getElementById("nextBtn").onclick = function(){
+  if(index === quiz.length - 1){
+    endQuiz();
+    return;
+  }
+  index++;
+  showQuestion();
+};
+
+/* INIT */
+startQuiz();
+
+</script>
+
+</body>
+</html>
