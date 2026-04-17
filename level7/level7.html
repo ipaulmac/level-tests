@@ -181,35 +181,40 @@ body{
 
 <body>
 
-<div class="w-full max-w-[380px] flex justify-between items-center mb-2">
+<div class="w-full max-w-[380px] flex justify-between items-center mb-2 gap-2 relative">
 
-  <h2 class="text-white font-extrabold tracking-widest">
+  <!-- TITLE -->
+  <h2 class="text-white font-extrabold tracking-widest whitespace-nowrap text-sm">
     LEVEL 7 QUIZ
   </h2>
 
-  <div class="flex items-center gap-2">
+  <!-- RIGHT SIDE -->
+  <div class="flex items-center gap-1">
 
     <!-- Instructions -->
-    <details id="instructionsBox" style="position:relative;">
-      <summary style="cursor:pointer; font-weight:700; color:#FFD700; list-style:none;">
-        Instructions <span style="color:#cfe4ff;">▶</span>
-      </summary>
+<details id="instructionsBox">
+  <summary style="cursor:pointer; font-weight:700; color:#FFD700; list-style:none;">
+    Instructions <span style="color:#cfe4ff;">▶</span>
+  </summary>
 
-      <div style="
-        position:absolute;
-        right:0;
-        top:30px;
-        width:300px;
-        background:#eef6ff;
-        border-radius:8px;
-        padding:10px 12px;
-        font-size:0.85rem;
-        line-height:1.4;
-        color:#061247;
-        font-weight:700;
-        z-index:10;
-      ">
-        This Quiz contains 15 questions chosen randomly from a library of 48.
+  <div style="
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  top:45px;
+  width:90vw;
+  max-width:260px;
+  background:#eef6ff;
+  border-radius:8px;
+  padding:10px 12px;
+  font-size:0.85rem;
+  line-height:1.4;
+  color:#061247;
+  font-weight:700;
+  z-index:10;
+  box-shadow:0 4px 12px rgba(0,0,0,0.25);
+">
+        This Quiz contains 10 questions chosen randomly from a library of 48.
         They will change each time you attempt the Quiz.
         <br><br>
 
@@ -219,15 +224,10 @@ body{
       </div>
     </details>
 
-  <button id="soundToggle" class="sound-btn">
-  <span id="soundIcon">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="#000000" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 10v4h4l5 4V6L7 10H3z"/>
-      <path d="M16 12c0-1.77-1-3.29-2.5-4.03v8.06A4.49 4.49 0 0 0 16 12z"/>
-    </svg>
-  </span>
-  ON
-</button>
+    <!-- SOUND BUTTON -->
+    <button id="soundToggle" class="sound-btn text-xs px-2">
+      🔊 ON
+    </button>
 
   </div>
 
@@ -796,7 +796,7 @@ let score = 0;
 /* START QUIZ */
 function startQuiz(){
 
-  quiz = shuffle([...questions]).slice(0,15);
+  quiz = shuffle([...questions]).slice(0,10);
 
   index = 0;
   score = 0;
